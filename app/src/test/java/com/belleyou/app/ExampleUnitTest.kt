@@ -1,4 +1,4 @@
-package com.practicum.belleyou
+package com.belleyou.app
 
 import org.junit.Test
 

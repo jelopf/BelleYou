@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">BelleYou</string>
+    <string name="cart_screen_title">Корзина</string>
+    <string name="catalog_screen_title">Каталог</string>
+    <string name="favorites_screen_title">Избранное</string>
+    <string name="home_screen_title">Главная</string>
+    <string name="categories">Категории</string>
+    <string name="new_items">Новинки</string>
+    <string name="profile_screen_title">Профиль</string>
 </resources>
