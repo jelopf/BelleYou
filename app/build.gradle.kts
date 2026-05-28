@@ -59,4 +59,7 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    implementation("com.google.accompanist:accompanist-pager:0.35.0-alpha")
+    implementation("com.google.accompanist:accompanist-pager-indicators:0.35.0-alpha")
 }
