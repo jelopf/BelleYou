@@ -3,8 +3,11 @@
     <string name="cart_screen_title">Корзина</string>
     <string name="catalog_screen_title">Каталог</string>
     <string name="favorites_screen_title">Избранное</string>
-    <string name="home_screen_title">Главная</string>
+    <string name="home_screen_title">belle you</string>
     <string name="categories">Категории</string>
     <string name="new_items">Новинки</string>
     <string name="profile_screen_title">Профиль</string>
+
+    <string name="home_screen_in">Войти</string>
+    <string name="home_screen_discount">Персональные скидки в профиле</string>
 </resources>
