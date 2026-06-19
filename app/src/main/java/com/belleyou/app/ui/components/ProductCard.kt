@@ -43,14 +43,14 @@ fun ProductCard(
 
     Column(
         modifier = modifier
-            .background(colorResource(id = R.color.white))
+            .background(colorResource(R.color.white))
     ) {
         // Блок с картинкой (заглушка синим)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(1f)
-                .background(colorResource(id = R.color.belle_blue))
+                .background(colorResource(R.color.belle_blue))
         ) {
             // Сердечко в правом верхнем углу
             Icon(
@@ -80,6 +80,7 @@ fun ProductCard(
                         Text(
                             text = "$it ₽",
                             fontSize = 14.sp,
+                            lineHeight = 14.sp,
                             textDecoration = TextDecoration.LineThrough
                         )
                         Spacer(modifier = Modifier.width(4.dp))
@@ -87,6 +88,7 @@ fun ProductCard(
                     Text(
                         text = "${product.price} ₽",
                         fontSize = 14.sp,
+                        lineHeight = 14.sp,
                         fontWeight = FontWeight.Bold,
                         color = if (product.oldPrice != null) {
                             colorResource(R.color.belle_red)
@@ -99,7 +101,8 @@ fun ProductCard(
 
                 Text(
                     text = "${product.rating} ★",
-                    fontSize = 14.sp
+                    fontSize = 14.sp,
+                    lineHeight = 14.sp
                 )
             }
 
@@ -110,12 +113,14 @@ fun ProductCard(
             ) {
                 Text(
                     text = product.brand,
-                    fontSize = 14.sp
+                    fontSize = 14.sp,
+                    lineHeight = 14.sp
                 )
                 Text(
                     text = "(${product.reviewsCount})",
                     fontSize = 14.sp,
-                    color = colorResource(id = R.color.belle_gray)
+                    lineHeight = 14.sp,
+                    color = colorResource(R.color.belle_gray)
                 )
             }
 
@@ -123,6 +128,7 @@ fun ProductCard(
             Text(
                 text = product.name,
                 fontSize = 14.sp,
+                lineHeight = 14.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
