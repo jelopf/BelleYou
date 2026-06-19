@@ -7,9 +7,8 @@
     <string name="categories">Категории</string>
     <string name="new_items">Новинки</string>
     <string name="profile_screen_title">Профиль</string>
-    <string name="recommendations_screen_title">Рекомендации</string>
+    <string name="recommendations_screen_title">Подборка</string>
     <string name="wishlists_screen_title">Вишлисты</string>
-
     <string name="home_screen_in">Войти</string>
     <string name="home_screen_discount">Персональные скидки в профиле</string>
 </resources>
