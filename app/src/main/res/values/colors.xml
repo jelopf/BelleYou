@@ -8,6 +8,9 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="belle_blue">#D3E0EA</color>
+    <color name="belle_blue_dark">#76A4C8</color>
     <color name="belle_brown">#6A3D30</color>
-    <color name="belle_gray">#9BA4AB</color>
+    <color name="belle_black">#1A1717</color>
+    <color name="belle_gray">#BAB9B9</color>
+    <color name="belle_red">#CD4D4D</color>
 </resources>

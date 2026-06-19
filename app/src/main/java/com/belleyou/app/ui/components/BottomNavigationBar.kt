@@ -1,74 +1,106 @@
 package com.belleyou.app.ui.components
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.belleyou.app.navigation.Routes
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
+import com.belleyou.app.navigation.Routes
+import com.belleyou.app.R
 
 @Composable
 fun BottomNavigationBar(
     navController: NavHostController
 ) {
-
-    val currentRoute =
-        navController.currentBackStackEntryAsState()
-            .value
-            ?.destination
-            ?.route
+    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
     val navigationItems = listOf(
-        Pair(Icons.Default.Home, Routes.Home.route),
-        Pair(Icons.Default.Menu, Routes.Catalog.route),
-        Pair(Icons.Default.ShoppingCart, Routes.Cart.route),
-        Pair(Icons.Default.Favorite, Routes.Favorites.route),
-        Pair(Icons.Default.Person, Routes.Profile.route)
+        Pair(R.drawable.ic_home, Routes.Home.route),
+        Pair(R.drawable.ic_recommendations, Routes.Recommendations.route),
+        Pair(R.drawable.ic_wishlists, Routes.Wishlists.route),
+        Pair(R.drawable.ic_cart, Routes.Cart.route)
     )
 
-    NavigationBar {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(colorResource(id = R.color.white))
+            .navigationBarsPadding()
+    ) {
+        HorizontalDivider(
+            thickness = 0.6.dp,
+            color = colorResource(id = R.color.belle_gray)
+        )
 
-        navigationItems.forEach { item ->
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(40.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            navigationItems.forEach { item ->
+                val isSelected = currentRoute == item.second
 
-            NavigationBarItem(
-                selected =
-                    currentRoute == item.second,
-
-                onClick = {
-
-                    navController.navigate(
-                        item.second
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
+                            if (!isSelected) {
+                                navController.navigate(item.second) {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            }
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(28.dp)
+                            .background(
+                                color = if (isSelected) colorResource(id = R.color.belle_blue) else androidx.compose.ui.graphics.Color.Unspecified,
+                                shape = CircleShape
+                            ),
+                        contentAlignment = Alignment.Center
                     ) {
-
-                        popUpTo(
-                            navController.graph.startDestinationId
+                        Icon(
+                            painter = painterResource(id = item.first),
+                            contentDescription = null,
+                            modifier = Modifier.size(19.dp),
+                            tint = colorResource(id = R.color.belle_black)
                         )
-
-                        launchSingleTop = true
-
-                        restoreState = true
                     }
-                },
-
-                icon = {
-                    Icon(
-                        imageVector = item.first,
-                        contentDescription = null
-                    )
                 }
-            )
+            }
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

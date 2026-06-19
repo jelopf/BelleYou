@@ -1,4 +1,4 @@
-package com.belleyou.app.features.favorites.presentation.screen
+package com.belleyou.app.features.wishlists.presentation.screen
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -53,10 +53,12 @@ import androidx.compose.ui.unit.sp
 import com.belleyou.app.R
 import com.belleyou.app.core.data.fake.product.fakeProducts
 import com.belleyou.app.features.product.domain.model.Product
+import com.belleyou.app.ui.components.HeaderBelleYou
+import com.belleyou.app.ui.components.ProductCard
 import kotlinx.coroutines.launch
 
 @Composable
-fun FavoritesScreen() {
+fun WishlistsScreen() {
 
     val scrollState = rememberScrollState()
 
@@ -67,15 +69,10 @@ fun FavoritesScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Логотип
-        Image(
-            painter = painterResource(R.drawable.belle_you_home),
-            contentDescription = "Лого",
-            modifier = Modifier
-                .padding(top = 12.dp)
-                .width(87.dp)
-                .height(25.dp),
-            contentScale = ContentScale.Fit
+        HeaderBelleYou(
+            modifier = Modifier.padding(top = 12.dp)
         )
+
         HorizontalDivider(
             modifier = Modifier
                 .fillMaxWidth()
@@ -238,131 +235,8 @@ private fun WishlistButton(
     }
 }
 
-@Composable
-fun ProductCard(
-    product: Product,
-    modifier: Modifier = Modifier
-) {
-    val oldPrice = (product.price * 1.2).toInt() // Временный способ пересчёта скидки (но он применяет скидку ко всем ценам вне зависимости от того, есть ли она)
-
-    Column(
-        modifier = modifier
-    ) {
-        Box {
-            // Плейсхолдер изображения
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .background(colorResource(R.color.belle_gray))
-            )
-            Icon(
-                imageVector = Icons.Default.Favorite,
-                contentDescription = null,
-                tint = Color.Red,
-                modifier = Modifier
-                    .clickable { }
-                    .align(Alignment.TopEnd)
-                    .padding(8.dp)
-                    .size(16.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Цена и рейтинг
-        Row (
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                text = oldPrice.toString(),
-                textDecoration = TextDecoration.LineThrough,
-                color = Color.Black
-            )
-
-            Spacer(modifier = Modifier.width(5.dp))
-
-            Text(
-                text = "${product.price}",
-                color = Color.Red
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Text(text = "${product.rating} ★")
-        }
-
-        // Бренд и кол-во отзывов
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(text = product.category) // Название категории, вместо бренда
-            Text(
-                text = "(90)", // Заглушка
-                color = Color.Gray,
-            )
-        }
-
-        // Название одежды
-        Text(text = product.name)
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // Выбор размера
-        Box(
-            modifier = Modifier
-                .width(80.dp)
-                .height(40.dp)
-                .border(
-                    width = 1.dp,
-                    color = colorResource(R.color.belle_gray),
-                    shape = RoundedCornerShape(4.dp)
-                )
-                .padding(horizontal = 12.dp),
-            contentAlignment = Alignment.CenterStart
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = "M", // Заглушка
-                    fontSize = 12.sp
-                )
-                Icon(
-                    painter = painterResource(R.drawable.ic_arrow_down),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .clickable { }
-                        .size(16.dp)
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // Кнопка "В корзину"
-        Button(
-            onClick = { },
-            modifier = Modifier.fillMaxWidth().height(35.dp),
-            shape = RoundedCornerShape(6.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = colorResource(R.color.belle_blue),
-                contentColor = Color.Black
-            )
-        ) {
-            Text(
-                text = stringResource(id = R.string.in_cart),
-                fontSize = 10.sp
-            )
-        }
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
-fun FavoritesScreenPreview() {
-    FavoritesScreen()
+fun WishlistsScreenPreview() {
+    WishlistsScreen()
 }
