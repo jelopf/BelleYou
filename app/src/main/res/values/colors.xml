@@ -9,4 +9,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="belle_blue">#D3E0EA</color>
     <color name="belle_brown">#6A3D30</color>
+    <color name="belle_black">#1A1717</color>
+    <color name="belle_gray">#BAB9B9</color>
 </resources>

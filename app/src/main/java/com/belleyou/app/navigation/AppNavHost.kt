@@ -31,8 +31,8 @@ fun AppNavHost() {
             navController = navController,
             startDestination = Routes.Home.route,
             modifier = Modifier
-                .fillMaxSize()
                 .padding(paddingValues)
+                .fillMaxSize()
         ) {
 
             composable(Routes.Home.route) {
