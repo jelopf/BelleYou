@@ -15,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -24,6 +23,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.belleyou.app.R
+import com.belleyou.app.core.data.fake.product.fakeProducts
+import com.belleyou.app.ui.components.HeaderBelleYou
+import com.belleyou.app.ui.components.ProductCard
 
 @Composable
 fun RecommendationsScreen() {
@@ -38,12 +40,11 @@ fun RecommendationsScreen() {
                 .padding(horizontal = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            Spacer(modifier = Modifier.height(52.dp))
+            HeaderBelleYou()
+            Spacer(modifier = Modifier.height(12.dp))
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Start
             ) {
                 Text(
@@ -62,12 +63,15 @@ fun RecommendationsScreen() {
                     .fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(width = 200.dp, height = 278.dp)
-                        .background(Color.LightGray)
-                ) {
-                    Text("Карточка товара", modifier = Modifier.align(Alignment.Center))
+                if (fakeProducts.isNotEmpty()) {
+                    ProductCard(
+                        product = fakeProducts[0],
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 0.dp)
+                    )
+                } else {
+                    Text("Нет доступных товаров")
                 }
             }
 
