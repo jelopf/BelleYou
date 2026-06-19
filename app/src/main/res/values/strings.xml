@@ -2,7 +2,7 @@
     <string name="app_name">BelleYou</string>
     <string name="cart_screen_title">Корзина</string>
     <string name="catalog_screen_title">Каталог</string>
-    <string name="favorites_screen_title">Избранное</string>
+    <string name="favorites_screen_title">Вишлисты</string>
     <string name="home_screen_title">belle you</string>
     <string name="categories">Категории</string>
     <string name="new_items">Новинки</string>
@@ -10,4 +10,5 @@
 
     <string name="home_screen_in">Войти</string>
     <string name="home_screen_discount">Персональные скидки в профиле</string>
+    <string name="in_cart">В КОРЗИНУ</string>
 </resources>
