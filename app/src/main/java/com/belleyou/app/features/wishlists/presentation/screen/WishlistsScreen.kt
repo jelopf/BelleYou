@@ -1,4 +1,4 @@
-package com.belleyou.app.features.profile.presentation.screen
+package com.belleyou.app.features.wishlists.presentation.screen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.belleyou.app.R
 
 @Composable
-fun ProfileScreen() {
+fun WishlistsScreen() {
 
     Box(
         modifier = Modifier
@@ -24,13 +24,13 @@ fun ProfileScreen() {
     ) {
 
         Text(
-            text = stringResource(id = R.string.profile_screen_title)
+            text = stringResource(id = R.string.wishlists_screen_title)
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun ProfileScreenPreview() {
-    ProfileScreen()
+fun WishlistsScreenPreview() {
+    WishlistsScreen()
 }

@@ -1,4 +1,4 @@
-package com.belleyou.app.features.favorites.presentation.screen
+package com.belleyou.app.features.recommendations.presentation.screen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.belleyou.app.R
 
 @Composable
-fun FavoritesScreen() {
+fun RecommendationsScreen() {
 
     Box(
         modifier = Modifier
@@ -24,13 +24,13 @@ fun FavoritesScreen() {
     ) {
 
         Text(
-            text = stringResource(id = R.string.favorites_screen_title)
+            text = stringResource(id = R.string.recommendations_screen_title)
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun FavoritesScreenPreview() {
-    FavoritesScreen()
+fun RecommendationsScreenPreview() {
+    RecommendationsScreen()
 }

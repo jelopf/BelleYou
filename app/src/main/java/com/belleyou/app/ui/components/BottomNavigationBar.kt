@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -29,10 +30,9 @@ fun BottomNavigationBar(
 
     val navigationItems = listOf(
         Pair(Icons.Default.Home, Routes.Home.route),
-        Pair(Icons.Default.Menu, Routes.Catalog.route),
-        Pair(Icons.Default.ShoppingCart, Routes.Cart.route),
-        Pair(Icons.Default.Favorite, Routes.Favorites.route),
-        Pair(Icons.Default.Person, Routes.Profile.route)
+        Pair(Icons.Default.Star, Routes.Recommendations.route),
+        Pair(Icons.Default.Favorite, Routes.Wishlists.route),
+        Pair(Icons.Default.ShoppingCart, Routes.Cart.route)
     )
 
     NavigationBar {
