@@ -35,9 +35,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.runtime.remember
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(onProductClick: (Int) -> Unit = {}) {
     val images = listOf(
         R.drawable.slide,
         R.drawable.slide,
@@ -130,21 +133,21 @@ fun HomeScreen() {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                SquareCard(modifier = Modifier.weight(1f))
-                SquareCard(modifier = Modifier.weight(1f))
+                SquareCard(modifier = Modifier.weight(1f), onClick = { onProductClick(1) })
+                SquareCard(modifier = Modifier.weight(1f), onClick = { onProductClick(2) })
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                SquareCard(modifier = Modifier.weight(1f))
-                SquareCard(modifier = Modifier.weight(1f))
+                SquareCard(modifier = Modifier.weight(1f), onClick = { onProductClick(3) })
+                SquareCard(modifier = Modifier.weight(1f), onClick = { onProductClick(4) })
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                SquareCard(modifier = Modifier.weight(1f))
+                SquareCard(modifier = Modifier.weight(1f), onClick = { onProductClick(5) })
                 SquareCard(modifier = Modifier.weight(1f))
             }
         }
@@ -152,11 +155,16 @@ fun HomeScreen() {
 }
 
 @Composable
-fun SquareCard(modifier: Modifier = Modifier) {
+fun SquareCard(modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
     Box(
         modifier = modifier
             .aspectRatio(1f)
             .background(colorResource(id = R.color.belle_blue))
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onClick
+            )
     )
 }
 

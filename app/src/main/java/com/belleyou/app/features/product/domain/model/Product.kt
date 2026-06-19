@@ -7,7 +7,10 @@ data class Product(
     val price: Int,
     val rating: Float,
     val imageUrl: String? = null,
+    val description: String = "",
     val colors: List<String>,
+    val sizes: List<String> = emptyList(),
+    val variantImages: List<Int> = emptyList(),
     val category: String,
     val isFavorite: Boolean = false
 )

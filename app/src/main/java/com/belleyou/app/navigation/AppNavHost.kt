@@ -12,7 +12,10 @@ import com.belleyou.app.features.cart.presentation.screen.CartScreen
 import com.belleyou.app.features.recommendations.presentation.screen.RecommendationsScreen
 import com.belleyou.app.features.wishlists.presentation.screen.WishlistsScreen
 import com.belleyou.app.features.home.presentation.screen.HomeScreen
+import com.belleyou.app.features.product.presentation.screen.ProductDetailScreen
 import com.belleyou.app.ui.components.BottomNavigationBar
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 
 @Composable
 fun AppNavHost() {
@@ -36,7 +39,9 @@ fun AppNavHost() {
         ) {
 
             composable(Routes.Home.route) {
-                HomeScreen()
+                HomeScreen(onProductClick = { productId ->
+                    navController.navigate("product_detail/$productId")
+                })
             }
 
             composable(Routes.Recommendations.route) {
@@ -49,6 +54,16 @@ fun AppNavHost() {
 
             composable(Routes.Cart.route) {
                 CartScreen()
+            }
+
+            composable(
+                route = Routes.ProductDetail(0).route,
+                arguments = listOf(
+                    navArgument(Routes.ProductDetail.ARG_ID) { type = NavType.IntType }
+                )
+            ) { backStackEntry ->
+                val productId = backStackEntry.arguments?.getInt(Routes.ProductDetail.ARG_ID) ?: 0
+                ProductDetailScreen(productId = productId)
             }
         }
     }

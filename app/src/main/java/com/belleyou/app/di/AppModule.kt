@@ -1,6 +1,5 @@
 package com.belleyou.app.di
 
-import com.belleyou.app.core.data.fake.product.fakeProducts
 import com.belleyou.app.features.cart.data.repository.CartRepositoryImpl
 import com.belleyou.app.features.cart.domain.repository.CartRepository
 import com.belleyou.app.features.cart.domain.usecase.AddToCartUseCase
@@ -13,7 +12,9 @@ import com.belleyou.app.features.cart.domain.usecase.RemoveFromCartUseCase
 import com.belleyou.app.features.home.presentation.viewmodel.HomeViewModel
 import com.belleyou.app.features.product.domain.data.repository.ProductRepositoryImpl
 import com.belleyou.app.features.product.domain.repository.ProductRepository
+import com.belleyou.app.features.product.domain.usecase.GetProductUseCase
 import com.belleyou.app.features.product.domain.usecase.GetProductsUseCase
+import com.belleyou.app.features.product.presentation.viewmodel.ProductDetailViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -31,6 +32,10 @@ val appModule = module {
     // Product use cases
     single {
         GetProductsUseCase(get())
+    }
+
+    single {
+        GetProductUseCase(get())
     }
 
     // Cart use cases
@@ -65,5 +70,9 @@ val appModule = module {
     // ViewModel
     viewModel {
         HomeViewModel(get())
+    }
+
+    viewModel { (productId: Int) ->
+        ProductDetailViewModel(productId, get())
     }
 }

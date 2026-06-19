@@ -9,4 +9,8 @@ class ProductRepositoryImpl : ProductRepository {
     override suspend fun getProducts(): List<Product> {
         return fakeProducts
     }
+
+    override suspend fun getProductById(id: Int): Product? {
+        return fakeProducts.find { it.id == id }
+    }
 }

@@ -1,17 +1,21 @@
 package com.belleyou.app.core.data.fake.product
 
 import com.belleyou.app.features.product.domain.model.Product
+import com.belleyou.app.R
 
 val fakeProducts = listOf(
 
     Product(
         id = 1,
-        name = "Платье-рубашка",
+        name = "Лонгслив из хлопка Одежда для отдыха / Cruise черно-молочная полоска",
         article = "BY001",
         price = 5990,
         rating = 4.8f,
         imageUrl = null,
+        description = "Лонгслив из мягкого хлопка в рубчик — базовая вещь для вашего гардероба. Модель с глубоким круглым вырезом и длинными рукавами. Идеально подходит для создания многослойных образов или как самостоятельный элемент.\n\n• Облегающий крой\n• Мягкий трикотаж в рубчик\n• Глубокий круглый вырез\n• Рост модели 175 см, на ней размер S",
         colors = listOf("Blue"),
+        sizes = listOf("XS", "S", "M", "L", "XL"),
+        variantImages = listOf(R.drawable.slide, R.drawable.slide),
         category = "Платья"
     ),
 
