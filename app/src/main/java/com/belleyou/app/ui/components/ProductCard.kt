@@ -40,7 +40,8 @@ fun ProductCard(
     modifier: Modifier = Modifier,
     showSizeSelector: Boolean = false,
     showInCartButton: Boolean = false,
-    showFavoriteIcon: Boolean = false
+    showFavoriteIcon: Boolean = false,
+    onClick: () -> Unit = {}
 ) {
     // Локальное состояние для сердечка (пока только UI)
     var isFavorite by remember { mutableStateOf(product.isFavorite) }
@@ -48,6 +49,7 @@ fun ProductCard(
     Column(
         modifier = modifier
             .background(colorResource(R.color.white))
+            .clickable { onClick() }
     ) {
         // Блок с картинкой (заглушка синим)
         Box(
@@ -150,12 +152,12 @@ fun ProductCard(
 
             var selectedSize by remember {
                 mutableStateOf(
-                    product.availableSizes.firstOrNull() ?: ""
+                    product.sizes.firstOrNull() ?: ""
                 )
             }
 
             SizeSelector(
-                sizes = product.availableSizes,
+                sizes = product.sizes,
                 selectedSize = selectedSize,
                 onSizeSelected = { selectedSize = it },
                 modifier = Modifier.padding(start = 6.dp)

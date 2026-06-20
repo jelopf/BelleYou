@@ -15,6 +15,5 @@ data class Product(
     val sizes: List<String> = emptyList(),
     val variantImages: List<Int> = emptyList(),
     val category: String,
-    val isFavorite: Boolean = false,
-    val availableSizes: List<String>
+    val isFavorite: Boolean = false
 )

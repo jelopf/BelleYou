@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -50,6 +49,7 @@ import com.belleyou.app.R
 import com.belleyou.app.features.product.domain.model.Product
 import com.belleyou.app.features.product.presentation.viewmodel.ProductDetailUiState
 import com.belleyou.app.features.product.presentation.viewmodel.ProductDetailViewModel
+import com.belleyou.app.ui.components.HeaderBelleYou
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -96,27 +96,15 @@ fun ProductDetailSuccess(product: Product) {
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
                 .padding(bottom = 80.dp)
+
         ) {
             // Logo Header
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 12.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.belle_you_home),
-                    contentDescription = "Belle You Logo",
-                    modifier = Modifier
-                        .width(87.dp)
-                        .height(25.dp),
-                    contentScale = ContentScale.Fit
-                )
-            }
+            HeaderBelleYou()
 
             // Product Image
             Image(
@@ -356,12 +344,16 @@ fun ProductDetailPreview() {
     ProductDetailSuccess(
         product = Product(
             id = 1,
-            name = "Лонгслив из хлопка",
+            name = "Лонгслив из хлопка Одежда для отдыха / Cruise черно-молочная полоска",
             article = "BY001",
             price = 5990,
+            oldPrice = 7990,
             rating = 4.8f,
+            reviewsCount = 145,
+            brand = "SELA",
+            imageUrl = null,
+            description = "Лонгслив из мягкого хлопка в рубчик — базовая вещь для вашего гардероба. Модель с глубоким круглым вырезом и длинными рукавами.\n\n• Облегающий крой\n• Мягкий трикотаж в рубчик",
             colors = listOf("Blue"),
-            description = "Лонгслив из мягкого хлопка в рубчик — базовая вещь для вашего гардероба.",
             sizes = listOf("XS", "S", "M", "L", "XL"),
             variantImages = listOf(R.drawable.slide, R.drawable.slide),
             category = "Платья"
