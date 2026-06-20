@@ -13,9 +13,7 @@ import com.belleyou.app.R
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.ui.layout.ContentScale
@@ -24,24 +22,18 @@ import androidx.compose.ui.unit.sp
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
-import androidx.compose.material3.Surface
 import androidx.compose.ui.res.colorResource
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.ui.graphics.RectangleShape
 import com.belleyou.app.core.data.fake.product.fakeProducts
 import com.belleyou.app.ui.components.HeaderBelleYou
 import com.belleyou.app.ui.components.ProductCard
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(onProductClick: (Int) -> Unit = {}) {
     val images = listOf(
         R.drawable.slide,
         R.drawable.slide,
@@ -144,9 +136,12 @@ fun HomeScreen() {
 
                     // Первая карточка в строке
                     if (firstIndex < fakeProducts.size) {
+                        val product = fakeProducts[firstIndex]
+
                         ProductCard(
                             product = fakeProducts[firstIndex],
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            onClick = { onProductClick(product.id) }
                         )
                     } else {
                         Box(modifier = Modifier.weight(1f)) // пустая заглушка, если товара нет
@@ -154,9 +149,13 @@ fun HomeScreen() {
 
                     // Вторая карточка в строке
                     if (secondIndex < fakeProducts.size) {
+                        val product = fakeProducts[firstIndex]
+
                         ProductCard(
                             product = fakeProducts[secondIndex],
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            // 3. То же самое для второй карточки в ряду
+                            onClick = { onProductClick(product.id) }
                         )
                     } else {
                         Box(modifier = Modifier.weight(1f)) // пустая заглушка
