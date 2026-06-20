@@ -37,6 +37,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.graphics.RectangleShape
 import com.belleyou.app.core.data.fake.product.fakeProducts
+import com.belleyou.app.ui.components.CategoryRow
 import com.belleyou.app.ui.components.HeaderBelleYou
 import com.belleyou.app.ui.components.ProductCard
 
@@ -81,40 +82,23 @@ fun HomeScreen() {
             activeColor = colorResource(id = R.color.black),
             inactiveColor = colorResource(id = R.color.belle_blue)
         )
-
-        /*Surface(
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = stringResource(id = R.string.categories),
+            color = colorResource(id = R.color.black),
+            fontSize = 24.sp,
             modifier = Modifier
-                .fillMaxWidth(),
-            color = colorResource(id = R.color.belle_brown)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 14.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(id = R.string.home_screen_discount),
-                    color = colorResource(id = R.color.white),
-                    fontSize = 14.sp,
-                    modifier = Modifier
-                        .padding(horizontal = 24.dp)
-                )
-                Button(
-                    onClick = { /* действие */ },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = colorResource(id = R.color.white),
-                        contentColor = colorResource(id = R.color.black)
-                    ),
-                    shape = RectangleShape,
-                    contentPadding = PaddingValues(horizontal = 12.dp),
-                    modifier = Modifier.height(32.dp)
-                ) {
-                    Text(stringResource(id = R.string.home_screen_in))
-                }
+                .fillMaxWidth()
+                .wrapContentWidth(Alignment.Start)
+                .padding(horizontal = 24.dp)
+        )
+        CategoryRow(
+            categories = listOf("Нижнее белье", "Одежда", "Купальники"),
+            onCategoryClick = { category ->
+                // пока просто заглушка
             }
-        }*/
+        )
+        Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = stringResource(id = R.string.home_screen_new),
             color = colorResource(id = R.color.black),

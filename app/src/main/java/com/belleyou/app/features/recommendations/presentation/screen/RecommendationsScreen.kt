@@ -34,78 +34,85 @@ fun RecommendationsScreen() {
             .fillMaxSize()
             .background(colorResource(id = R.color.white))
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            HeaderBelleYou()
-            Spacer(modifier = Modifier.height(12.dp))
-            Row(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start
+                    .fillMaxSize()
+                    .padding(horizontal = 0.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = stringResource(id = R.string.recommendations_screen_title),
-                    color = colorResource(id = R.color.belle_black),
-                    fontSize = 16.sp,
-                    fontFamily = FontFamily.SansSerif,
-                    fontWeight = FontWeight.Normal,
-                    lineHeight = 22.sp
-                )
-            }
-
-            Box(
+            Column(
                 modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.Center
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if (fakeProducts.isNotEmpty()) {
-                    ProductCard(
-                        product = fakeProducts[0],
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 0.dp)
+                HeaderBelleYou()
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.recommendations_screen_title),
+                        color = colorResource(id = R.color.belle_black),
+                        fontSize = 16.sp,
+                        fontFamily = FontFamily.SansSerif,
+                        fontWeight = FontWeight.Normal,
+                        lineHeight = 22.sp
                     )
-                } else {
-                    Text("Нет доступных товаров")
                 }
-            }
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (fakeProducts.isNotEmpty()) {
+                        ProductCard(
+                            product = fakeProducts[0],
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 0.dp)
+                        )
+                    } else {
+                        Text("Нет доступных товаров")
+                    }
+                }
 
-                SquareButton(
-                    resId = R.drawable.ic_skip,
-                    contentDescription = "Пропустить",
-                    mainColor = colorResource(id = R.color.belle_red),
-                    modifier = Modifier.size(40.dp),
-                    onClick = { /* TODO */ }
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
 
-                SquareButton(
-                    resId = R.drawable.ic_wishlists,
-                    contentDescription = "В вишлист",
-                    mainColor = colorResource(id = R.color.belle_blue_dark),
-                    modifier = Modifier.size(width = 41.dp, height = 35.dp),
-                    onClick = { /* TODO */ }
-                )
+                    SquareButton(
+                        resId = R.drawable.ic_skip,
+                        contentDescription = "Пропустить",
+                        mainColor = colorResource(id = R.color.belle_red),
+                        modifier = Modifier.size(40.dp),
+                        onClick = { /* TODO */ }
+                    )
 
-                SquareButton(
-                    resId = R.drawable.ic_cart,
-                    contentDescription = "В корзину",
-                    mainColor = colorResource(id = R.color.belle_brown),
-                    modifier = Modifier.size(width = 36.dp, height = 34.dp),
-                    onClick = { /* TODO */ }
-                )
+                    SquareButton(
+                        resId = R.drawable.ic_wishlists,
+                        contentDescription = "В вишлист",
+                        mainColor = colorResource(id = R.color.belle_blue_dark),
+                        modifier = Modifier.size(width = 41.dp, height = 35.dp),
+                        onClick = { /* TODO */ }
+                    )
+
+                    SquareButton(
+                        resId = R.drawable.ic_cart,
+                        contentDescription = "В корзину",
+                        mainColor = colorResource(id = R.color.belle_brown),
+                        modifier = Modifier.size(width = 36.dp, height = 34.dp),
+                        onClick = { /* TODO */ }
+                    )
+                }
             }
         }
     }
