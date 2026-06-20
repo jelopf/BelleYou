@@ -60,12 +60,12 @@ fun WishlistsScreen() {
         // Логотип
         HeaderBelleYou()
 
-        HorizontalDivider(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(0.6.dp),
-            color = colorResource(R.color.belle_brown)
-        )
+//        HorizontalDivider(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .height(0.6.dp),
+//            color = colorResource(R.color.belle_brown)
+//        )
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -125,7 +125,8 @@ fun WishlistsScreen() {
                     product = product,
                     modifier = Modifier.weight(1f),
                     showSizeSelector = true,
-                    showInCartButton = true
+                    showInCartButton = true,
+                    showFavoriteIcon = true
                 )
             }
         }

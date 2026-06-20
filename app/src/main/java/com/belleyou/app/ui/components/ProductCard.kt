@@ -39,7 +39,8 @@ fun ProductCard(
     product: Product,  // <-- теперь принимаем реальный объект
     modifier: Modifier = Modifier,
     showSizeSelector: Boolean = false,
-    showInCartButton: Boolean = false
+    showInCartButton: Boolean = false,
+    showFavoriteIcon: Boolean = false
 ) {
     // Локальное состояние для сердечка (пока только UI)
     var isFavorite by remember { mutableStateOf(product.isFavorite) }
@@ -56,16 +57,22 @@ fun ProductCard(
                 .background(colorResource(R.color.belle_blue))
         ) {
             // Сердечко в правом верхнем углу
-            Icon(
-                imageVector = Icons.Default.Favorite,
-                contentDescription = "Избранное",
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(8.dp)
-                    .size(24.dp)
-                    .clickable { isFavorite = !isFavorite },
-                tint = if (isFavorite) Color.Red else colorResource(R.color.white)
-            )
+            if (showFavoriteIcon) {
+                Icon(
+                    imageVector = Icons.Default.Favorite,
+                    contentDescription = "Избранное",
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                        .size(24.dp)
+                        .clickable { isFavorite = !isFavorite },
+                    tint = if (isFavorite) {
+                        Color.Red
+                    } else {
+                        colorResource(R.color.white)
+                    }
+                )
+            }
         }
 
         Column(
