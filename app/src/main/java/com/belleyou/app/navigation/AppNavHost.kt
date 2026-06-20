@@ -63,7 +63,10 @@ fun AppNavHost() {
                 )
             ) { backStackEntry ->
                 val productId = backStackEntry.arguments?.getInt(Routes.ProductDetail.ARG_ID) ?: 0
-                ProductDetailScreen(productId = productId)
+                ProductDetailScreen(
+                    productId = productId,
+                    onBackClick = { navController.popBackStack() }
+                )
             }
         }
     }

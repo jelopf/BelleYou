@@ -18,6 +18,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -56,16 +57,18 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun ProductDetailScreen(
     productId: Int,
+    onBackClick: () -> Unit = {},
     viewModel: ProductDetailViewModel = koinViewModel { parametersOf(productId) }
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    ProductDetailContent(uiState = uiState)
+    ProductDetailContent(uiState = uiState, onBackClick = onBackClick)
 }
 
 @Composable
 fun ProductDetailContent(
-    uiState: ProductDetailUiState
+    uiState: ProductDetailUiState,
+    onBackClick: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         when (uiState) {
@@ -74,7 +77,7 @@ fun ProductDetailContent(
             }
 
             is ProductDetailUiState.Success -> {
-                ProductDetailSuccess(product = uiState.product)
+                ProductDetailSuccess(product = uiState.product, onBackClick = onBackClick)
             }
 
             is ProductDetailUiState.Error -> {
@@ -89,7 +92,10 @@ fun ProductDetailContent(
 }
 
 @Composable
-fun ProductDetailSuccess(product: Product) {
+fun ProductDetailSuccess(
+    product: Product,
+    onBackClick: () -> Unit
+) {
     val scrollState = rememberScrollState()
     var selectedSize by remember { mutableStateOf("S") }
     var showDescription by remember { mutableStateOf(false) }
@@ -104,7 +110,24 @@ fun ProductDetailSuccess(product: Product) {
 
         ) {
             // Logo Header
-            HeaderBelleYou()
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                HeaderBelleYou()
+                IconButton(
+                    onClick = onBackClick,
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .padding(start = 8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Close",
+                        tint = colorResource(id = R.color.belle_gray)
+                    )
+                }
+            }
 
             // Product Image
             Image(
@@ -342,6 +365,7 @@ fun AccordionItem(title: String, onClick: () -> Unit = {}) {
 @Composable
 fun ProductDetailPreview() {
     ProductDetailSuccess(
+        onBackClick = {},
         product = Product(
             id = 1,
             name = "Лонгслив из хлопка Одежда для отдыха / Cruise черно-молочная полоска",
