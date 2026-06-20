@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,8 +17,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,11 +34,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.belleyou.app.R
 import kotlinx.coroutines.launch
-import kotlin.math.max
 
 @Composable
 fun CategoryRow(
     categories: List<String>,
+    images: List<Int>,
     onCategoryClick: (String) -> Unit = {}
 ) {
     val listState = rememberLazyListState()
@@ -65,7 +64,8 @@ fun CategoryRow(
             contentPadding = PaddingValues(horizontal = contentPaddingHorizontal),
             modifier = Modifier.fillMaxWidth()
         ) {
-            items(categories) { category ->
+            itemsIndexed(categories) { index, category ->
+                val imageRes = if (index < images.size) images[index] else R.drawable.swimwear_category
                 Row(
                     modifier = Modifier
                         .width(finalItemWidth)
@@ -76,10 +76,10 @@ fun CategoryRow(
                     horizontalArrangement = Arrangement.Start
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.swimwear_category),
+                        painter = painterResource(id = imageRes),
                         contentDescription = null,
                         modifier = Modifier.size(48.dp),
-                        contentScale = ContentScale.Crop // чтобы картинка влезала ровно
+                        contentScale = ContentScale.Crop
                     )
                     Text(
                         text = category,
@@ -132,7 +132,6 @@ fun CategoryRow(
                 painter = painterResource(R.drawable.ic_arrow_right),
                 contentDescription = null,
                 modifier = Modifier.size(12.dp),
-                    //.padding(top = 4.dp),
                 tint = colorResource(R.color.belle_gray)
             )
         }

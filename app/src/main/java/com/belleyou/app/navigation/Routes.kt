@@ -8,4 +8,5 @@ sealed class Routes(val route: String) {
     data object Wishlists : Routes("wishlists")
 
     data object Cart : Routes("cart")
+    //data object Category : Routes("category")
 }

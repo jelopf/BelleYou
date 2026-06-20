@@ -13,9 +13,7 @@ import com.belleyou.app.R
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.ui.layout.ContentScale
@@ -24,30 +22,31 @@ import androidx.compose.ui.unit.sp
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
-import androidx.compose.material3.Surface
 import androidx.compose.ui.res.colorResource
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.ui.graphics.RectangleShape
 import com.belleyou.app.core.data.fake.product.fakeProducts
 import com.belleyou.app.ui.components.CategoryRow
 import com.belleyou.app.ui.components.HeaderBelleYou
 import com.belleyou.app.ui.components.ProductCard
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    onCategoryClick: (String) -> Unit = {}
+) {
     val images = listOf(
         R.drawable.slide,
         R.drawable.slide,
         R.drawable.slide,
         R.drawable.slide,
+        R.drawable.slide
+    )
+    val images_category = listOf(
+        R.drawable.underwear_category,
+        R.drawable.swimwear_category,
         R.drawable.slide
     )
     val pagerState = rememberPagerState()
@@ -94,9 +93,8 @@ fun HomeScreen() {
         )
         CategoryRow(
             categories = listOf("Нижнее белье", "Одежда", "Купальники"),
-            onCategoryClick = { category ->
-                // пока просто заглушка
-            }
+            images = images_category,
+            onCategoryClick = onCategoryClick
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
@@ -129,6 +127,7 @@ fun HomeScreen() {
                     // Первая карточка в строке
                     if (firstIndex < fakeProducts.size) {
                         ProductCard(
+                            showFavoriteIcon = true,
                             product = fakeProducts[firstIndex],
                             modifier = Modifier.weight(1f)
                         )
@@ -139,6 +138,7 @@ fun HomeScreen() {
                     // Вторая карточка в строке
                     if (secondIndex < fakeProducts.size) {
                         ProductCard(
+                            showFavoriteIcon = true,
                             product = fakeProducts[secondIndex],
                             modifier = Modifier.weight(1f)
                         )

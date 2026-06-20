@@ -5,10 +5,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.belleyou.app.features.cart.presentation.screen.CartScreen
+import com.belleyou.app.features.category.CategoryScreen
 import com.belleyou.app.features.recommendations.presentation.screen.RecommendationsScreen
 import com.belleyou.app.features.wishlists.presentation.screen.WishlistsScreen
 import com.belleyou.app.features.home.presentation.screen.HomeScreen
@@ -36,7 +39,11 @@ fun AppNavHost() {
         ) {
 
             composable(Routes.Home.route) {
-                HomeScreen()
+                HomeScreen(
+                    onCategoryClick = { categoryName ->
+                        navController.navigate("category/$categoryName")
+                    }
+                )
             }
 
             composable(Routes.Recommendations.route) {
@@ -49,6 +56,14 @@ fun AppNavHost() {
 
             composable(Routes.Cart.route) {
                 CartScreen()
+            }
+
+            composable(
+                route = "category/{categoryName}",
+                arguments = listOf(navArgument("categoryName") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val categoryName = backStackEntry.arguments?.getString("categoryName") ?: "Категория"
+                CategoryScreen(categoryName = categoryName)
             }
         }
     }
