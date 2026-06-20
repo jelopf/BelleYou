@@ -30,17 +30,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.runtime.remember
+import com.belleyou.app.core.data.fake.product.fakeProducts
+import com.belleyou.app.ui.components.HeaderBelleYou
+import com.belleyou.app.ui.components.ProductCard
 
 @Composable
-fun HomeScreen(onProductClick: (Int) -> Unit = {}) {
+fun HomeScreen() {
     val images = listOf(
         R.drawable.slide,
         R.drawable.slide,
@@ -58,15 +59,7 @@ fun HomeScreen(onProductClick: (Int) -> Unit = {}) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        Image(
-            painter = painterResource(R.drawable.belle_you_home), // замени на своё имя
-            contentDescription = "Лого",
-            modifier = Modifier
-                .width(87.dp)
-                .height(25.dp),
-            contentScale = ContentScale.Fit
-        )
-        Spacer(modifier = Modifier.height(8.dp))
+        HeaderBelleYou()
         HorizontalPager(
             count = images.size,
             state = pagerState
@@ -89,7 +82,7 @@ fun HomeScreen(onProductClick: (Int) -> Unit = {}) {
             inactiveColor = colorResource(id = R.color.belle_blue)
         )
 
-        Surface(
+        /*Surface(
             modifier = Modifier
                 .fillMaxWidth(),
             color = colorResource(id = R.color.belle_brown)
@@ -121,51 +114,57 @@ fun HomeScreen(onProductClick: (Int) -> Unit = {}) {
                     Text(stringResource(id = R.string.home_screen_in))
                 }
             }
-        }
+        }*/
+        Text(
+            text = stringResource(id = R.string.home_screen_new),
+            color = colorResource(id = R.color.black),
+            fontSize = 24.sp,
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentWidth(Alignment.Start)
+                .padding(horizontal = 24.dp)
+        )
+        // Динамическая сетка карточек
         Spacer(modifier = Modifier.height(16.dp))
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                SquareCard(modifier = Modifier.weight(1f), onClick = { onProductClick(1) })
-                SquareCard(modifier = Modifier.weight(1f), onClick = { onProductClick(2) })
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                SquareCard(modifier = Modifier.weight(1f), onClick = { onProductClick(3) })
-                SquareCard(modifier = Modifier.weight(1f), onClick = { onProductClick(4) })
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                SquareCard(modifier = Modifier.weight(1f), onClick = { onProductClick(5) })
-                SquareCard(modifier = Modifier.weight(1f))
+            val rows = (fakeProducts.size + 1) / 2 // количество строк (округляем вверх)
+            for (row in 0 until rows) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    val firstIndex = row * 2
+                    val secondIndex = firstIndex + 1
+
+                    // Первая карточка в строке
+                    if (firstIndex < fakeProducts.size) {
+                        ProductCard(
+                            product = fakeProducts[firstIndex],
+                            modifier = Modifier.weight(1f)
+                        )
+                    } else {
+                        Box(modifier = Modifier.weight(1f)) // пустая заглушка, если товара нет
+                    }
+
+                    // Вторая карточка в строке
+                    if (secondIndex < fakeProducts.size) {
+                        ProductCard(
+                            product = fakeProducts[secondIndex],
+                            modifier = Modifier.weight(1f)
+                        )
+                    } else {
+                        Box(modifier = Modifier.weight(1f)) // пустая заглушка
+                    }
+                }
             }
         }
     }
-}
-
-@Composable
-fun SquareCard(modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
-    Box(
-        modifier = modifier
-            .aspectRatio(1f)
-            .background(colorResource(id = R.color.belle_blue))
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = onClick
-            )
-    )
 }
 
 @Preview(showBackground = true)
