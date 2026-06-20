@@ -63,7 +63,10 @@ fun AppNavHost() {
                 arguments = listOf(navArgument("categoryName") { type = NavType.StringType })
             ) { backStackEntry ->
                 val categoryName = backStackEntry.arguments?.getString("categoryName") ?: "Категория"
-                CategoryScreen(categoryName = categoryName)
+                CategoryScreen(
+                    categoryName = categoryName,
+                    navController = navController
+                )
             }
         }
     }

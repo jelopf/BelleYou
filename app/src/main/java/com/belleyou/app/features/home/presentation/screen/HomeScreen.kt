@@ -28,15 +28,34 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.belleyou.app.core.data.fake.product.fakeProducts
 import com.belleyou.app.ui.components.CategoryRow
 import com.belleyou.app.ui.components.HeaderBelleYou
 import com.belleyou.app.ui.components.ProductCard
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.OutlinedTextFieldDefaults
 
 @Composable
 fun HomeScreen(
     onCategoryClick: (String) -> Unit = {}
 ) {
+    var searchQuery by remember { mutableStateOf("") }
+    val filteredProducts = if (searchQuery.isBlank()) {
+        fakeProducts
+    } else {
+        fakeProducts.filter { product ->
+            product.name.contains(searchQuery, ignoreCase = true) ||
+                    product.category.contains(searchQuery, ignoreCase = true)
+        }
+    }
     val images = listOf(
         R.drawable.slide,
         R.drawable.slide,
@@ -81,6 +100,33 @@ fun HomeScreen(
             activeColor = colorResource(id = R.color.black),
             inactiveColor = colorResource(id = R.color.belle_blue)
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = { searchQuery = it },
+            placeholder = { Text("Поиск товаров...") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 14.dp),
+            singleLine = true,
+            trailingIcon = {
+                if (searchQuery.isNotEmpty()) {
+                    IconButton(onClick = { searchQuery = "" }) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Очистить"
+                        )
+                    }
+                }
+            },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = colorResource(id = R.color.belle_under_header),
+                unfocusedBorderColor = colorResource(id = R.color.belle_under_header),
+                focusedTextColor = colorResource(id = R.color.belle_under_header),
+                unfocusedTextColor = colorResource(id = R.color.belle_under_header),
+            )
+        )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = stringResource(id = R.string.categories),
@@ -115,7 +161,7 @@ fun HomeScreen(
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            val rows = (fakeProducts.size + 1) / 2 // количество строк (округляем вверх)
+            val rows = (filteredProducts.size + 1) / 2
             for (row in 0 until rows) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -124,30 +170,28 @@ fun HomeScreen(
                     val firstIndex = row * 2
                     val secondIndex = firstIndex + 1
 
-                    // Первая карточка в строке
-                    if (firstIndex < fakeProducts.size) {
+                    if (firstIndex < filteredProducts.size) {
                         ProductCard(
-                            showFavoriteIcon = true,
-                            product = fakeProducts[firstIndex],
-                            modifier = Modifier.weight(1f)
+                            product = filteredProducts[firstIndex],
+                            modifier = Modifier.weight(1f),
+                            showFavoriteIcon = true
                         )
                     } else {
-                        Box(modifier = Modifier.weight(1f)) // пустая заглушка, если товара нет
+                        Box(modifier = Modifier.weight(1f))
                     }
 
-                    // Вторая карточка в строке
-                    if (secondIndex < fakeProducts.size) {
+                    if (secondIndex < filteredProducts.size) {
                         ProductCard(
-                            showFavoriteIcon = true,
-                            product = fakeProducts[secondIndex],
-                            modifier = Modifier.weight(1f)
+                            product = filteredProducts[secondIndex],
+                            modifier = Modifier.weight(1f),
+                            showFavoriteIcon = true
                         )
                     } else {
-                        Box(modifier = Modifier.weight(1f)) // пустая заглушка
+                        Box(modifier = Modifier.weight(1f))
                     }
                 }
             }
-        }
+            }
     }
 }
 
