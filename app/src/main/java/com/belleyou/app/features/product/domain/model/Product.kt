@@ -10,7 +10,10 @@ data class Product(
     val reviewsCount: Int = 0,  // количество отзывов
     val brand: String,          // бренд
     val imageUrl: String? = null,
+    val description: String = "",
     val colors: List<String>,
+    val sizes: List<String> = emptyList(),
+    val variantImages: List<Int> = emptyList(),
     val category: String,
     val isFavorite: Boolean = false,
     val availableSizes: List<String>

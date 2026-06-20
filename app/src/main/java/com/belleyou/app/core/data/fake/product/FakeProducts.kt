@@ -1,12 +1,12 @@
 package com.belleyou.app.core.data.fake.product
 
 import com.belleyou.app.features.product.domain.model.Product
+import com.belleyou.app.R
 
 val fakeProducts = listOf(
-
     Product(
         id = 1,
-        name = "Платье-рубашка",
+        name = "Лонгслив из хлопка Одежда для отдыха / Cruise черно-молочная полоска",
         article = "BY001",
         price = 5990,
         oldPrice = 7990,
@@ -14,14 +14,16 @@ val fakeProducts = listOf(
         reviewsCount = 145,
         brand = "SELA",
         imageUrl = null,
+        description = "Лонгслив из мягкого хлопка в рубчик — базовая вещь для вашего гардероба. Модель с глубоким круглым вырезом и длинными рукавами. Идеально подходит для создания многослойных образов или как самостоятельный элемент.\n\n• Облегающий крой\n• Мягкий трикотаж в рубчик\n• Глубокий круглый вырез\n• Рост модели 175 см, на ней размер S",
         colors = listOf("Blue"),
-        category = "Платья",
-        availableSizes = listOf("XS", "S", "M", "L", "XL")
+        sizes = listOf("XS", "S", "M", "L", "XL"),
+        variantImages = listOf(R.drawable.slide, R.drawable.slide),
+        category = "Платья"
     ),
 
     Product(
         id = 2,
-        name = "Кружевной комплект с огромными яйцами в комплекте", // для проверочки отображения длинного текста
+        name = "Кружевной комплект с огромными яйцами в комплекте", 
         article = "BY002",
         price = 4290,
         oldPrice = null,
@@ -29,9 +31,11 @@ val fakeProducts = listOf(
         reviewsCount = 90,
         brand = "CRUISE",
         imageUrl = null,
+        description = "Элегантный кружевной комплект, выполненный из утонченных материалов. Идеальное сочетание комфорта и смелого дизайна для особых случаев.",
         colors = listOf("Black", "Red"),
-        category = "Комплекты",
-        availableSizes = listOf("XS", "S", "M", "L", "XL")
+        sizes = listOf("XS", "S", "M", "L", "XL"),
+        variantImages = listOf(R.drawable.slide, R.drawable.slide),
+        category = "Комплекты"
     ),
 
     Product(
@@ -44,9 +48,11 @@ val fakeProducts = listOf(
         reviewsCount = 101,
         brand = "BELLE YOU",
         imageUrl = null,
+        description = "Универсальный базовый топ из приятного к телу трикотажа. Незаменимая вещь в повседневном гардеробе, отлично сочетается с джинсами, пиджаками и кардиганами.",
         colors = listOf("White", "Beige"),
-        category = "Топы",
-        availableSizes = listOf("XS", "S", "M", "L", "XL")
+        sizes = listOf("XS", "S", "M", "L", "XL"),
+        variantImages = listOf(R.drawable.slide, R.drawable.slide),
+        category = "Топы"
     ),
 
     Product(
@@ -59,9 +65,11 @@ val fakeProducts = listOf(
         reviewsCount = 54,
         brand = "CRUISE",
         imageUrl = null,
+        description = "Роскошная шелковая пижама для идеального домашнего отдыха. Свободный крой не сковывает движения, а нежный материал дарит ощущение абсолютного уюта.",
         colors = listOf("Pink"),
-        category = "Домашняя одежда",
-        availableSizes = listOf("XS", "S", "M", "L", "XL")
+        sizes = listOf("XS", "S", "M", "L", "XL"),
+        variantImages = listOf(R.drawable.slide, R.drawable.slide),
+        category = "Домашняя одежда"
     ),
 
     Product(
@@ -74,8 +82,10 @@ val fakeProducts = listOf(
         reviewsCount = 68,
         brand = "BELLE YOU",
         imageUrl = null,
+        description = "Изящное боди с деликатными кружевными вставками. Модель отлично садится по фигуре, подчеркивая силуэт. Подходит как для создания вечерних образов, так и под одежду.",
         colors = listOf("Black"),
-        category = "Боди",
-        availableSizes = listOf("XS", "S", "M", "L", "XL")
+        sizes = listOf("XS", "S", "M", "L", "XL"),
+        variantImages = listOf(R.drawable.slide, R.drawable.slide),
+        category = "Боди"
     )
 )
