@@ -12,5 +12,6 @@ data class Product(
     val imageUrl: String? = null,
     val colors: List<String>,
     val category: String,
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
+    val availableSizes: List<String>
 )

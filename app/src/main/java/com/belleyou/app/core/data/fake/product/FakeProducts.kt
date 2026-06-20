@@ -15,12 +15,13 @@ val fakeProducts = listOf(
         brand = "SELA",
         imageUrl = null,
         colors = listOf("Blue"),
-        category = "Платья"
+        category = "Платья",
+        availableSizes = listOf("XS", "S", "M", "L", "XL")
     ),
 
     Product(
         id = 2,
-        name = "Кружевной комплект с огромными яйцами в комплекте", // для проверочки
+        name = "Кружевной комплект с огромными яйцами в комплекте", // для проверочки отображения длинного текста
         article = "BY002",
         price = 4290,
         oldPrice = null,
@@ -29,7 +30,8 @@ val fakeProducts = listOf(
         brand = "CRUISE",
         imageUrl = null,
         colors = listOf("Black", "Red"),
-        category = "Комплекты"
+        category = "Комплекты",
+        availableSizes = listOf("XS", "S", "M", "L", "XL")
     ),
 
     Product(
@@ -43,7 +45,8 @@ val fakeProducts = listOf(
         brand = "BELLE YOU",
         imageUrl = null,
         colors = listOf("White", "Beige"),
-        category = "Топы"
+        category = "Топы",
+        availableSizes = listOf("XS", "S", "M", "L", "XL")
     ),
 
     Product(
@@ -57,7 +60,8 @@ val fakeProducts = listOf(
         brand = "CRUISE",
         imageUrl = null,
         colors = listOf("Pink"),
-        category = "Домашняя одежда"
+        category = "Домашняя одежда",
+        availableSizes = listOf("XS", "S", "M", "L", "XL")
     ),
 
     Product(
@@ -71,6 +75,7 @@ val fakeProducts = listOf(
         brand = "BELLE YOU",
         imageUrl = null,
         colors = listOf("Black"),
-        category = "Боди"
+        category = "Боди",
+        availableSizes = listOf("XS", "S", "M", "L", "XL")
     )
 )

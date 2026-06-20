@@ -123,7 +123,9 @@ fun WishlistsScreen() {
 
                 ProductCard(
                     product = product,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    showSizeSelector = true,
+                    showInCartButton = true
                 )
             }
         }

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -36,7 +37,9 @@ import com.belleyou.app.features.product.domain.model.Product
 @Composable
 fun ProductCard(
     product: Product,  // <-- теперь принимаем реальный объект
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    showSizeSelector: Boolean = false,
+    showInCartButton: Boolean = false
 ) {
     // Локальное состояние для сердечка (пока только UI)
     var isFavorite by remember { mutableStateOf(product.isFavorite) }
@@ -131,6 +134,35 @@ fun ProductCard(
                 lineHeight = 14.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
+            )
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+        // Выбор размеров
+        if (showSizeSelector) {
+
+            var selectedSize by remember {
+                mutableStateOf(
+                    product.availableSizes.firstOrNull() ?: ""
+                )
+            }
+
+            SizeSelector(
+                sizes = product.availableSizes,
+                selectedSize = selectedSize,
+                onSizeSelected = { selectedSize = it },
+                modifier = Modifier.padding(start = 6.dp)
+            )
+        }
+
+        if (showSizeSelector && showInCartButton) {
+            Spacer(modifier = Modifier.height(12.dp))
+        }
+
+        // Кнопка "В КОРЗИНУ"
+        if (showInCartButton) {
+            InCartButton(
+                onClick = {/*  добавить в корзину */}
             )
         }
     }
