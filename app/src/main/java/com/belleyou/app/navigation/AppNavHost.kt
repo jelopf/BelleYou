@@ -5,17 +5,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.belleyou.app.features.cart.presentation.screen.CartScreen
+import com.belleyou.app.features.category.CategoryScreen
 import com.belleyou.app.features.recommendations.presentation.screen.RecommendationsScreen
 import com.belleyou.app.features.wishlists.presentation.screen.WishlistsScreen
 import com.belleyou.app.features.home.presentation.screen.HomeScreen
 import com.belleyou.app.features.product.presentation.screen.ProductDetailScreen
 import com.belleyou.app.ui.components.BottomNavigationBar
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
 
 @Composable
 fun AppNavHost() {
@@ -39,7 +40,11 @@ fun AppNavHost() {
         ) {
 
             composable(Routes.Home.route) {
-                HomeScreen(onProductClick = { productId ->
+                HomeScreen(
+                    onCategoryClick = { categoryName ->
+                    navController.navigate("category/$categoryName")
+                },
+                    onProductClick = { productId ->
                     navController.navigate("product_detail/$productId")
                 })
             }
@@ -66,6 +71,17 @@ fun AppNavHost() {
                 ProductDetailScreen(
                     productId = productId,
                     onBackClick = { navController.popBackStack() }
+                )
+            }
+
+            composable(
+                route = "category/{categoryName}",
+                arguments = listOf(navArgument("categoryName") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val categoryName = backStackEntry.arguments?.getString("categoryName") ?: "Категория"
+                CategoryScreen(
+                    categoryName = categoryName,
+                    navController = navController
                 )
             }
         }

@@ -4,6 +4,7 @@ import com.belleyou.app.features.product.domain.model.Product
 import com.belleyou.app.R
 
 val fakeProducts = listOf(
+
     Product(
         id = 1,
         name = "Лонгслив из хлопка Одежда для отдыха / Cruise черно-молочная полоска",
@@ -18,12 +19,12 @@ val fakeProducts = listOf(
         colors = listOf("Blue"),
         sizes = listOf("XS", "S", "M", "L", "XL"),
         variantImages = listOf(R.drawable.slide, R.drawable.slide),
-        category = "Платья"
+        category = "Одежда"
     ),
 
     Product(
         id = 2,
-        name = "Кружевной комплект с огромными яйцами в комплекте", 
+        name = "Кружевной комплект",
         article = "BY002",
         price = 4290,
         oldPrice = null,
@@ -35,7 +36,7 @@ val fakeProducts = listOf(
         colors = listOf("Black", "Red"),
         sizes = listOf("XS", "S", "M", "L", "XL"),
         variantImages = listOf(R.drawable.slide, R.drawable.slide),
-        category = "Комплекты"
+        category = "Нижнее белье"
     ),
 
     Product(
@@ -52,7 +53,7 @@ val fakeProducts = listOf(
         colors = listOf("White", "Beige"),
         sizes = listOf("XS", "S", "M", "L", "XL"),
         variantImages = listOf(R.drawable.slide, R.drawable.slide),
-        category = "Топы"
+        category = "Одежда"
     ),
 
     Product(
@@ -69,7 +70,7 @@ val fakeProducts = listOf(
         colors = listOf("Pink"),
         sizes = listOf("XS", "S", "M", "L", "XL"),
         variantImages = listOf(R.drawable.slide, R.drawable.slide),
-        category = "Домашняя одежда"
+        category = "Одежда"
     ),
 
     Product(
@@ -86,6 +87,6 @@ val fakeProducts = listOf(
         colors = listOf("Black"),
         sizes = listOf("XS", "S", "M", "L", "XL"),
         variantImages = listOf(R.drawable.slide, R.drawable.slide),
-        category = "Боди"
+        category = "Одежда"
     )
 )

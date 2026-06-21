@@ -1,11 +1,14 @@
 package com.belleyou.app.ui.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.belleyou.app.R
@@ -23,4 +26,10 @@ fun HeaderBelleYou(
         contentScale = ContentScale.Fit
     )
     Spacer(modifier = Modifier.height(8.dp))
+    HorizontalDivider(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(0.6.dp),
+        color = colorResource(R.color.belle_under_header)
+    )
 }

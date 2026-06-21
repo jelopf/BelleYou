@@ -14,4 +14,5 @@ sealed class Routes(val route: String) {
             const val ARG_ID = "id"
         }
     }
+    //data object Category : Routes("category")
 }
