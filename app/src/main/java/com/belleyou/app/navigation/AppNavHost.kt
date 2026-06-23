@@ -10,13 +10,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.belleyou.app.features.cart.presentation.screen.CartScreen
-import com.belleyou.app.features.category.CategoryScreen
-import com.belleyou.app.features.recommendations.presentation.screen.RecommendationsScreen
-import com.belleyou.app.features.wishlists.presentation.screen.WishlistsScreen
-import com.belleyou.app.features.home.presentation.screen.HomeScreen
-import com.belleyou.app.features.product.presentation.screen.ProductDetailScreen
-import com.belleyou.app.ui.components.BottomNavigationBar
+import com.belleyou.core.designsystem.components.navigation.BottomNavigationBar
+import com.belleyou.feature.cart.ui.CartScreen
+import com.belleyou.feature.category.ui.CategoryScreen
+import com.belleyou.feature.home.ui.HomeScreen
+import com.belleyou.feature.product.ui.ProductDetailScreen
+import com.belleyou.feature.recommendations.ui.RecommendationsScreen
+import com.belleyou.feature.wishlist.ui.WishlistScreen
 
 @Composable
 fun AppNavHost() {
@@ -54,7 +54,7 @@ fun AppNavHost() {
             }
 
             composable(Routes.Wishlists.route) {
-                WishlistsScreen()
+                WishlistScreen()
             }
 
             composable(Routes.Cart.route) {
