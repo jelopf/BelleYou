@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -48,40 +49,58 @@ import androidx.compose.ui.unit.sp
 import com.belleyou.app.R
 import com.belleyou.core.designsystem.components.layout.HeaderBelleYou
 import com.belleyou.core.model.Product
+import com.belleyou.core.model.ProductUiModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
 fun ProductDetailScreen(
     productId: Int,
-    onBackClick: () -> Unit = {},
+    onBackClick: () -> Unit,
     viewModel: ProductDetailViewModel = koinViewModel { parametersOf(productId) }
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    ProductDetailContent(uiState = uiState, onBackClick = onBackClick)
+    ProductDetailContent(
+        uiState = uiState,
+        onBackClick = onBackClick,
+        onSelectSize = viewModel::selectSize,
+        onToggleDescription = viewModel::toggleDescription,
+        onCloseDescription = viewModel::closeDescription
+    )
 }
 
 @Composable
 fun ProductDetailContent(
     uiState: ProductDetailUiState,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onSelectSize: (String) -> Unit,
+    onToggleDescription: () -> Unit,
+    onCloseDescription: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        when (uiState) {
-            is ProductDetailUiState.Loading -> {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+
+        when {
+            uiState.isLoading -> {
+                CircularProgressIndicator(Modifier.align(Alignment.Center))
             }
 
-            is ProductDetailUiState.Success -> {
-                ProductDetailSuccess(product = uiState.product, onBackClick = onBackClick)
-            }
-
-            is ProductDetailUiState.Error -> {
+            uiState.error != null -> {
                 Text(
-                    text = uiState.message,
-                    modifier = Modifier.align(Alignment.Center),
-                    color = MaterialTheme.colorScheme.error
+                    text = uiState.error,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+
+            uiState.product != null -> {
+                ProductDetailSuccess(
+                    product = uiState.product,
+                    selectedSize = uiState.selectedSize,
+                    showDescription = uiState.showDescription,
+                    onBackClick = onBackClick,
+                    onSelectSize = onSelectSize,
+                    onToggleDescription = onToggleDescription,
+                    onCloseDescription = onCloseDescription
                 )
             }
         }
@@ -90,33 +109,36 @@ fun ProductDetailContent(
 
 @Composable
 fun ProductDetailSuccess(
-    product: Product,
-    onBackClick: () -> Unit
+    product: ProductUiModel,
+    selectedSize: String,
+    showDescription: Boolean,
+    onBackClick: () -> Unit,
+    onSelectSize: (String) -> Unit,
+    onToggleDescription: () -> Unit,
+    onCloseDescription: () -> Unit
 ) {
     val scrollState = rememberScrollState()
-    var selectedSize by remember { mutableStateOf("S") }
-    var showDescription by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
                 .padding(bottom = 80.dp)
-
         ) {
-            // Logo Header
+
+            // ===== HEADER =====
             Box(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
                 HeaderBelleYou()
+
                 IconButton(
                     onClick = onBackClick,
-                    modifier = Modifier
-                        .align(Alignment.CenterStart)
-                        .padding(start = 8.dp)
+                    modifier = Modifier.align(Alignment.CenterStart)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Close,
@@ -126,10 +148,10 @@ fun ProductDetailSuccess(
                 }
             }
 
-            // Product Image
+            // ===== IMAGE =====
             Image(
-                painter = painterResource(id = R.drawable.slide), // Defaulting to slide as placeholder
-                contentDescription = product.name,
+                painter = painterResource(id = R.drawable.slide),
+                contentDescription = product.product.name,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(450.dp),
@@ -138,31 +160,28 @@ fun ProductDetailSuccess(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Product Info
+            // ===== INFO =====
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             ) {
+
                 Text(
-                    text = product.name,
+                    text = product.product.name,
                     fontSize = 14.sp,
-                    lineHeight = 18.sp,
-                    color = colorResource(id = R.color.belle_black)
+                    lineHeight = 18.sp
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Color Variants
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    product.variantImages.take(2).forEach { imageRes ->
+                // ===== COLORS =====
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    product.images.take(2).forEach { imageRes ->
                         Image(
                             painter = painterResource(id = imageRes),
                             contentDescription = null,
-                            modifier = Modifier
-                                .size(52.dp, 70.dp),
+                            modifier = Modifier.size(52.dp, 70.dp),
                             contentScale = ContentScale.Crop
                         )
                     }
@@ -170,28 +189,23 @@ fun ProductDetailSuccess(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Size Selection Label
+                // ===== SIZE LABEL =====
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(
-                        text = "Размер:",
-                        fontSize = 12.sp,
-                        color = colorResource(id = R.color.belle_black)
-                    )
+                    Text("Размер:", fontSize = 12.sp)
+
                     Text(
                         text = "Таблица размеров",
                         fontSize = 12.sp,
-                        color = colorResource(id = R.color.belle_gray),
-                        textDecoration = TextDecoration.None
+                        color = colorResource(id = R.color.belle_gray)
                     )
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Sizes
+                // ===== SIZES =====
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -200,7 +214,7 @@ fun ProductDetailSuccess(
                         SizeItem(
                             size = size,
                             isSelected = size == selectedSize,
-                            onClick = { selectedSize = size },
+                            onClick = { onSelectSize(size) },
                             modifier = Modifier.weight(1f)
                         )
                     }
@@ -208,9 +222,13 @@ fun ProductDetailSuccess(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // Accordion Sections
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    AccordionItem("Описание и размеры", onClick = { showDescription = true })
+                // ===== ACCORDION =====
+                Column {
+                    AccordionItem(
+                        title = "Описание и размеры",
+                        onClick = onToggleDescription
+                    )
+
                     AccordionItem("Состав и уход")
                     AccordionItem("Возврат")
                     AccordionItem("Наличие в магазинах")
@@ -218,37 +236,33 @@ fun ProductDetailSuccess(
             }
         }
 
-        // Add to Cart Button (Bottom)
+        // ===== ADD TO CART =====
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
             contentAlignment = Alignment.BottomCenter
         ) {
+
             Button(
-                onClick = { /* Add to cart action */ },
+                onClick = { /* add to cart */ },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(44.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorResource(id = R.color.belle_blue).copy(alpha = 0.5f),
                     contentColor = colorResource(id = R.color.belle_black)
-                ),
-                shape = RectangleShape,
-                elevation = null
-            ) {
-                Text(
-                    text = "В КОРЗИНУ",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium
                 )
+            ) {
+                Text("В КОРЗИНУ")
             }
         }
 
+        // ===== OVERLAY =====
         if (showDescription) {
             ProductDescriptionOverlay(
-                product = product,
-                onClose = { showDescription = false }
+                product = product.product,
+                onClose = onCloseDescription
             )
         }
     }
@@ -263,7 +277,10 @@ fun ProductDescriptionOverlay(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .clickable(enabled = false) {} // Consume clicks
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) {} // Consume clicks
     ) {
         Column(
             modifier = Modifier
@@ -334,11 +351,12 @@ fun SizeItem(
 
 @Composable
 fun AccordionItem(title: String, onClick: () -> Unit = {}) {
-    Column(modifier = Modifier.clickable(onClick = onClick)) {
+    Column {
         HorizontalDivider(thickness = 0.5.dp, color = colorResource(id = R.color.belle_gray).copy(alpha = 0.3f))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .clickable(onClick = onClick)
                 .padding(vertical = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -358,26 +376,22 @@ fun AccordionItem(title: String, onClick: () -> Unit = {}) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ProductDetailPreview() {
-    ProductDetailSuccess(
-        onBackClick = {},
-        product = Product(
-            id = 1,
-            name = "Лонгслив из хлопка Одежда для отдыха / Cruise черно-молочная полоска",
-            article = "BY001",
-            price = 5990,
-            oldPrice = 7990,
-            rating = 4.8f,
-            reviewsCount = 145,
-            brand = "SELA",
-            imageUrl = null,
-            description = "Лонгслив из мягкого хлопка в рубчик — базовая вещь для вашего гардероба. Модель с глубоким круглым вырезом и длинными рукавами.\n\n• Облегающий крой\n• Мягкий трикотаж в рубчик",
-            colors = listOf("Blue"),
-            sizes = listOf("XS", "S", "M", "L", "XL"),
-            variantImages = listOf(R.drawable.slide, R.drawable.slide),
-            category = "Платья"
-        )
-    )
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun ProductDetailPreview() {
+//    ProductDetailSuccess(
+//        onBackClick = {},
+//        product = Product(
+//            id = 1,
+//            name = "Лонгслив из хлопка Одежда для отдыха / Cruise черно-молочная полоска",
+//            article = "BY001",
+//            price = 5990,
+//            oldPrice = 7990,
+//            rating = 4.8f,
+//            reviewsCount = 145,
+//            brand = "SELA",
+//            description = "Лонгслив из мягкого хлопка в рубчик — базовая вещь для вашего гардероба. Модель с глубоким круглым вырезом и длинными рукавами.\n\n• Облегающий крой\n• Мягкий трикотаж в рубчик",
+//            category = "Платья"
+//        )
+//    )
+//}

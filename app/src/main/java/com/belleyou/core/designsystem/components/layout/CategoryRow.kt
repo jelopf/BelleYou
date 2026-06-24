@@ -98,7 +98,6 @@ fun CategoryRow(
         Box(
             modifier = Modifier
                 .align(Alignment.CenterStart)
-                .background(colorResource(id = R.color.white))
                 .clickable {
                     scope.launch {
                         listState.animateScrollBy(-200f)
@@ -119,7 +118,6 @@ fun CategoryRow(
             modifier = Modifier
                 //.size(height = 48.dp, width = 25.dp)
                 .align(Alignment.CenterEnd)
-                .background(colorResource(id = R.color.white))
                 .clickable {
                     scope.launch {
                         listState.animateScrollBy(200f)

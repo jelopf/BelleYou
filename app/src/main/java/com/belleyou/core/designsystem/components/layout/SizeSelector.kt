@@ -16,10 +16,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -32,13 +28,15 @@ import com.belleyou.app.R
 fun SizeSelector(
     sizes: List<String>,
     selectedSize: String,
+    expanded: Boolean,
+    onExpandedChange: (Boolean) -> Unit,
     onSizeSelected: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var expanded by remember { mutableStateOf(false) }
 
     Box(modifier = modifier) {
 
+        // ====== BUTTON (trigger) ======
         Box(
             modifier = Modifier
                 .width(80.dp)
@@ -48,10 +46,13 @@ fun SizeSelector(
                     color = colorResource(R.color.belle_gray),
                     shape = RoundedCornerShape(4.dp)
                 )
-                .clickable { expanded = true }
+                .clickable {
+                    onExpandedChange(true)
+                }
                 .padding(horizontal = 12.dp),
             contentAlignment = Alignment.CenterStart
         ) {
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -61,6 +62,7 @@ fun SizeSelector(
                     text = selectedSize,
                     fontSize = 12.sp
                 )
+
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow_down),
                     contentDescription = null,
@@ -69,19 +71,19 @@ fun SizeSelector(
             }
         }
 
+        // ====== DROPDOWN ======
         DropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { onExpandedChange(false) }
         ) {
+
             sizes.forEach { size ->
 
                 DropdownMenuItem(
-                    text = {
-                        Text(size)
-                    },
+                    text = { Text(size) },
                     onClick = {
                         onSizeSelected(size)
-                        expanded = false
+                        onExpandedChange(false)
                     }
                 )
             }

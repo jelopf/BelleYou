@@ -1,18 +1,30 @@
 package com.belleyou.app.navigation
 
 sealed class Routes(val route: String) {
+
     data object Home : Routes("home")
 
     data object Recommendations : Routes("recommendations")
 
-    data object Wishlists : Routes("wishlists")
+    data object Wishlist : Routes("wishlist")
 
     data object Cart : Routes("cart")
 
-    data class ProductDetail(val id: Int) : Routes("product_detail/{id}") {
-        companion object {
-            const val ARG_ID = "id"
+    data object ProductDetail : Routes("product_detail/{id}") {
+
+        const val ARG_ID = "id"
+
+        fun createRoute(id: Int): String {
+            return "product_detail/$id"
         }
     }
-    //data object Category : Routes("category")
+
+    data object Category : Routes("category/{categoryName}") {
+
+        const val ARG_NAME = "categoryName"
+
+        fun createRoute(categoryName: String): String {
+            return "category/$categoryName"
+        }
+    }
 }

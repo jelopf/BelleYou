@@ -1,6 +1,6 @@
 package com.belleyou.feature.product.data
 
-import com.belleyou.core.data.fake.fakeProducts
+import com.belleyou.core.data.mock.fakeProducts
 import com.belleyou.core.model.Product
 import com.belleyou.feature.product.domain.ProductRepository
 

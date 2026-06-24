@@ -37,7 +37,7 @@ fun BottomNavigationBar(
     val navigationItems = listOf(
         Pair(R.drawable.ic_home, Routes.Home.route),
         Pair(R.drawable.ic_recommendations, Routes.Recommendations.route),
-        Pair(R.drawable.ic_wishlists, Routes.Wishlists.route),
+        Pair(R.drawable.ic_wishlists, Routes.Wishlist.route),
         Pair(R.drawable.ic_cart, Routes.Cart.route)
     )
 

@@ -10,167 +10,160 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.belleyou.app.R
+import com.belleyou.feature.cart.domain.CartItem
 
 @Composable
 fun ProductCardCart(
+    item: CartItem,
+    onIncrease: () -> Unit,
+    onDecrease: () -> Unit,
+    onDelete: () -> Unit
+) {
 
-){
+    val product = item.product
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 30.dp),
+            .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ){
-        //Заглушка вместо изображения
+    ) {
+
+        // ===== IMAGE =====
         Box(
             modifier = Modifier
                 .size(66.dp, 100.dp)
-                .background(colorResource(id = R.color.belle_blue))
+                .background(colorResource(R.color.belle_blue))
         )
-        //Блок с текстом и кнопками
+
+        // ===== CONTENT =====
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 0.dp),
+            modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            //Тексты
+
+            // ===== TITLE + PRICE =====
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 0.dp),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+
                 Text(
-                    text = stringResource(id = R.string.cart_screen_title),
-                    fontSize = 12.sp
+                    text = product.name,
+                    fontSize = 12.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
                 )
-                Spacer(modifier = Modifier.width(3.dp))
+
+                Spacer(modifier = Modifier.width(8.dp))
+
                 Text(
-                    text = "7777 р",
+                    text = "${product.price * item.quantity} ₽",
                     fontSize = 12.sp
                 )
             }
-            Row{
+
+            // ===== ARTICLE =====
+            Row {
                 Text(
                     text = "арт.",
                     fontSize = 10.sp,
-                    color = colorResource(id = R.color.gray_text)
+                    color = colorResource(R.color.gray_text)
                 )
+
                 Spacer(modifier = Modifier.width(2.dp))
+
                 Text(
-                    text = "88005553535",
+                    text = product.article,
                     fontSize = 10.sp,
-                    color = colorResource(id = R.color.gray_text)
+                    color = colorResource(R.color.gray_text)
                 )
             }
-            Row{
+
+            // ===== COLOR (mock пока можно оставить) =====
+            Row {
                 Text(
                     text = "Цвет:",
                     fontSize = 10.sp,
-                    color = colorResource(id = R.color.gray_text)
+                    color = colorResource(R.color.gray_text)
                 )
+
                 Spacer(modifier = Modifier.width(2.dp))
+
                 Text(
-                    text = "серо-буро-малиновый",
+                    text = "не указан",
                     fontSize = 10.sp,
-                    color = colorResource(id = R.color.gray_text)
+                    color = colorResource(R.color.gray_text)
                 )
             }
-            //Кнопки
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // ===== ACTIONS =====
             Row(
-                modifier = Modifier
-                    .padding(top = 13.dp)
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .border(
-                                width = 0.3.dp,
-                                color = colorResource(id = R.color.gray_text)
-                            )
-                            .size(80.dp, 25.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ){
 
-                    }
-                    //Количество товара
-                    Row(
-                        modifier = Modifier
-                            .border(
-                                width = 0.3.dp,
-                                color = colorResource(id = R.color.gray_text)
-                            )
-                            .padding(horizontal = 2.dp)
-                            .size(80.dp, 25.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ){
-                        Button(
-                            onClick = { /* действие */ },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Transparent,
-                                contentColor = Color.Transparent),
-                            shape = RectangleShape,
-                            contentPadding = PaddingValues(vertical = 0.dp),
-                            modifier = Modifier.size(14.dp,25.dp)
-                        ) {
-                            Text(
-                                text = "-",
-                                fontSize = 20.sp,
-                                color = colorResource(id = R.color.belle_black)
-                            )
-                        }
-                        Text(
-                            text = "3",
-                            fontSize = 14.sp,
-                            color = colorResource(id = R.color.belle_black)
+                // ===== QUANTITY =====
+                Row(
+                    modifier = Modifier
+                        .border(
+                            0.3.dp,
+                            colorResource(R.color.gray_text)
                         )
-                        Button(                            onClick = { /* действие */ },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Transparent,
-                                contentColor = Color.Transparent),
-                            shape = RectangleShape,
-                            contentPadding = PaddingValues(vertical = 0.dp),
-                            modifier = Modifier.size(14.dp,25.dp)
-                        ) {
-                            Text(
-                                text = "+",
-                                fontSize = 14.sp,
-                                color = colorResource(id = R.color.belle_black)
-                            )
-                        }
+                        .height(25.dp)
+                        .width(90.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+
+                    TextButton(
+                        onClick = onDecrease,
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        Text("-")
+                    }
+
+                    Text(
+                        text = item.quantity.toString(),
+                        fontSize = 14.sp
+                    )
+
+                    TextButton(
+                        onClick = onIncrease,
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        Text("+")
                     }
                 }
+
+                // ===== DELETE =====
                 Icon(
                     painter = painterResource(id = R.drawable.ic_cart_delete_item),
                     contentDescription = "Удалить",
-                    modifier = Modifier
-                        .clickable { },
+                    modifier = Modifier.clickable {
+                        onDelete()
+                    },
                     tint = colorResource(R.color.belle_brown)
                 )
             }

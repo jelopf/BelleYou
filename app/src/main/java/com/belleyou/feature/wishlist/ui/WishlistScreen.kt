@@ -25,11 +25,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,35 +38,27 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.belleyou.app.R
-import com.belleyou.core.data.fake.fakeProducts
-import com.belleyou.core.designsystem.components.layout.HeaderBelleYou
 import com.belleyou.core.designsystem.components.cards.ProductCard
+import com.belleyou.core.designsystem.components.layout.HeaderBelleYou
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun WishlistScreen() {
-
-    val scrollState = rememberScrollState()
+fun WishlistScreen(
+    viewModel: WishlistViewModel = koinViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(scrollState),
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Логотип
         HeaderBelleYou()
-
-//        HorizontalDivider(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .height(0.6.dp),
-//            color = colorResource(R.color.belle_brown)
-//        )
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Заголовок
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -77,55 +67,57 @@ fun WishlistScreen() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = stringResource(id = R.string.favorites_screen_title),
+                text = stringResource(R.string.favorites_screen_title),
                 fontSize = 16.sp
             )
+
             Icon(
                 painter = painterResource(R.drawable.ic_favorite_list_add),
-                contentDescription = "Добавить вишлист",
+                contentDescription = null,
                 modifier = Modifier
-                    .clickable { }
-                    .size(20.dp),
+                    .size(20.dp)
+                    .clickable {  },
                 tint = colorResource(R.color.belle_brown)
             )
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Список вишлистов
-        WishlistRow(wishlists = listOf("избранное ❤️", "на пляж 🌴", "на каждый день ☀️"))
+        WishlistRow(
+            wishlists = uiState.wishlists,
+            selectedIndex = uiState.selectedWishlistIndex,
+            onSelect = viewModel::selectWishlist
+        )
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Иконка "Поделиться"
         Icon(
             painter = painterResource(R.drawable.ic_share),
-            contentDescription = "Поделиться",
+            contentDescription = null,
             modifier = Modifier
-                .clickable { }
                 .align(Alignment.Start)
                 .padding(start = 18.dp)
-                .size(20.dp),
+                .size(20.dp)
+                .clickable {  },
             tint = colorResource(id = R.color.belle_brown)
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        //Карточки
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 18.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            fakeProducts.take(2).forEach { product ->
-
+            uiState.products.take(2).forEach { product ->
                 ProductCard(
-                    product = product,
+                    uiModel = product,
                     modifier = Modifier.weight(1f),
                     showSizeSelector = true,
                     showInCartButton = true,
-                    showFavoriteIcon = true
+                    showFavoriteIcon = true,
+                    isFavorite = true
                 )
             }
         }
@@ -134,14 +126,13 @@ fun WishlistScreen() {
 
 @Composable
 private fun WishlistRow(
-    wishlists: List<String>
+    wishlists: List<String>,
+    selectedIndex: Int,
+    onSelect: (Int) -> Unit
 ) {
-    var selected by remember { mutableStateOf(0) }
-
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
 
-    //Вишлисты
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -150,18 +141,17 @@ private fun WishlistRow(
         LazyRow(
             state = listState,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(start = 18.dp, end = 18.dp),
-            modifier = Modifier.fillMaxWidth()
+            contentPadding = PaddingValues(horizontal = 18.dp)
         ) {
             itemsIndexed(wishlists) { index, item ->
                 WishlistButton(
                     title = item,
-                    selected = index == selected,
-                    onClick = { selected = index }
+                    selected = index == selectedIndex,
+                    onClick = { onSelect(index) }
                 )
             }
         }
-        // Левая стрелка
+
         Icon(
             painter = painterResource(R.drawable.ic_arrow_left),
             contentDescription = null,
@@ -170,13 +160,11 @@ private fun WishlistRow(
                 .padding(start = 4.dp)
                 .size(12.dp)
                 .clickable {
-                    scope.launch {
-                        listState.animateScrollBy(-200f)
-                    }
+                    scope.launch { listState.animateScrollBy(-200f) }
                 },
             tint = colorResource(R.color.belle_gray)
         )
-        // Правая стрелка
+
         Icon(
             painter = painterResource(R.drawable.ic_arrow_right),
             contentDescription = null,
@@ -185,9 +173,7 @@ private fun WishlistRow(
                 .padding(end = 4.dp)
                 .size(12.dp)
                 .clickable {
-                    scope.launch {
-                        listState.animateScrollBy(200f)
-                    }
+                    scope.launch { listState.animateScrollBy(200f) }
                 },
             tint = colorResource(R.color.belle_gray)
         )
@@ -200,7 +186,6 @@ private fun WishlistButton(
     selected: Boolean,
     onClick: () -> Unit
 ) {
-    // Параметры сегмента кнопки
     OutlinedButton(
         onClick = onClick,
         border = BorderStroke(
@@ -210,15 +195,18 @@ private fun WishlistButton(
         ),
         colors = ButtonDefaults.outlinedButtonColors(
             containerColor = Color.Transparent,
-            contentColor = colorResource(R.color.belle_brown)
+            contentColor = if (selected)
+                colorResource(R.color.belle_brown)
+            else colorResource(R.color.belle_black)
         ),
-        contentPadding = PaddingValues(horizontal = 5.dp),
-        shape = RoundedCornerShape(4.dp)
+        contentPadding = PaddingValues(horizontal = 5.dp, vertical = 0.dp),
+        shape = RoundedCornerShape(4.dp),
+        modifier = Modifier.height(30.dp)
     ) {
         Text(
             text = title,
             fontSize = 14.sp,
-            color = Color.Black
+            maxLines = 1
         )
     }
 }

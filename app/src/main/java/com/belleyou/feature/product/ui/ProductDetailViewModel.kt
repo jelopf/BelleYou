@@ -2,7 +2,7 @@ package com.belleyou.feature.product.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.belleyou.core.model.Product
+import com.belleyou.core.model.toUiModel
 import com.belleyou.feature.product.domain.usecase.GetProductUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,7 +13,9 @@ class ProductDetailViewModel(
     private val getProductUseCase: GetProductUseCase
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<ProductDetailUiState>(ProductDetailUiState.Loading)
+    private val _uiState =
+        MutableStateFlow(ProductDetailUiState(isLoading = true))
+
     val uiState = _uiState.asStateFlow()
 
     init {
@@ -22,19 +24,54 @@ class ProductDetailViewModel(
 
     private fun loadProduct() {
         viewModelScope.launch {
-            _uiState.value = ProductDetailUiState.Loading
-            val product = getProductUseCase(productId)
+
+            val product = getProductUseCase(productId)?.toUiModel()
+
             if (product != null) {
-                _uiState.value = ProductDetailUiState.Success(product)
+
+                _uiState.value = ProductDetailUiState(
+                    isLoading = false,
+                    product = product,
+                    selectedSize = product.sizes.firstOrNull().orEmpty(),
+                    isFavorite = false,
+                    showDescription = false
+                )
+
             } else {
-                _uiState.value = ProductDetailUiState.Error("Product not found")
+
+                _uiState.value = ProductDetailUiState(
+                    isLoading = false,
+                    error = "Product not found"
+                )
             }
         }
     }
-}
 
-sealed interface ProductDetailUiState {
-    data object Loading : ProductDetailUiState
-    data class Success(val product: Product) : ProductDetailUiState
-    data class Error(val message: String) : ProductDetailUiState
+    // =========================
+    // USER ACTIONS
+    // =========================
+
+    fun selectSize(size: String) {
+        _uiState.value = _uiState.value.copy(
+            selectedSize = size
+        )
+    }
+
+    fun toggleFavorite() {
+        _uiState.value = _uiState.value.copy(
+            isFavorite = !_uiState.value.isFavorite
+        )
+    }
+
+    fun toggleDescription() {
+        _uiState.value = _uiState.value.copy(
+            showDescription = !_uiState.value.showDescription
+        )
+    }
+
+    fun closeDescription() {
+        _uiState.value = _uiState.value.copy(
+            showDescription = false
+        )
+    }
 }

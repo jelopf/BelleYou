@@ -9,12 +9,15 @@ import com.belleyou.feature.cart.domain.usecase.DecreaseQuantityUseCase
 import com.belleyou.feature.cart.domain.usecase.GetCartItemsUseCase
 import com.belleyou.feature.cart.domain.usecase.IncreaseQuantityUseCase
 import com.belleyou.feature.cart.domain.usecase.RemoveFromCartUseCase
+import com.belleyou.feature.cart.ui.CartViewModel
 import com.belleyou.feature.home.ui.HomeViewModel
 import com.belleyou.feature.product.ui.ProductDetailViewModel
 import com.belleyou.feature.product.domain.ProductRepository
 import com.belleyou.feature.product.data.ProductRepositoryImpl
 import com.belleyou.feature.product.domain.usecase.GetProductUseCase
 import com.belleyou.feature.product.domain.usecase.GetProductsUseCase
+import com.belleyou.feature.recommendations.ui.RecommendationsViewModel
+import com.belleyou.feature.wishlist.ui.WishlistViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -74,5 +77,25 @@ val appModule = module {
 
     viewModel { (productId: Int) ->
         ProductDetailViewModel(productId, get())
+    }
+
+    viewModel {
+        RecommendationsViewModel(get())
+    }
+
+    viewModel {
+        CartViewModel(
+            getCartItemsUseCase = get(),
+            addToCartUseCase = get(),
+            removeFromCartUseCase = get(),
+            increaseQuantityUseCase = get(),
+            decreaseQuantityUseCase = get(),
+            clearCartUseCase = get(),
+            calculateCartTotalUseCase = get()
+        )
+    }
+
+    viewModel {
+        WishlistViewModel()
     }
 }
