@@ -26,28 +26,22 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.belleyou.app.R
-import com.belleyou.core.designsystem.components.layout.HeaderBelleYou
+import com.belleyou.core.designsystem.components.layout.HeaderBelleYouWithBack
 import com.belleyou.core.model.Product
 import com.belleyou.core.model.ProductUiModel
 import org.koin.androidx.compose.koinViewModel
@@ -129,26 +123,10 @@ fun ProductDetailSuccess(
                 .padding(bottom = 80.dp)
         ) {
 
-            // ===== HEADER =====
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                HeaderBelleYou()
+            HeaderBelleYouWithBack(onBackClick = onBackClick)
 
-                IconButton(
-                    onClick = onBackClick,
-                    modifier = Modifier.align(Alignment.CenterStart)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Close",
-                        tint = colorResource(id = R.color.belle_gray)
-                    )
-                }
-            }
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // ===== IMAGE =====
             Image(
                 painter = painterResource(id = R.drawable.slide),
                 contentDescription = product.product.name,
@@ -160,7 +138,6 @@ fun ProductDetailSuccess(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // ===== INFO =====
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -175,11 +152,10 @@ fun ProductDetailSuccess(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // ===== COLORS =====
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     product.images.take(2).forEach { imageRes ->
                         Image(
-                            painter = painterResource(id = imageRes),
+                            painter = painterResource(imageRes),
                             contentDescription = null,
                             modifier = Modifier.size(52.dp, 70.dp),
                             contentScale = ContentScale.Crop
@@ -189,7 +165,6 @@ fun ProductDetailSuccess(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // ===== SIZE LABEL =====
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -205,7 +180,6 @@ fun ProductDetailSuccess(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // ===== SIZES =====
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -222,7 +196,6 @@ fun ProductDetailSuccess(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // ===== ACCORDION =====
                 Column {
                     AccordionItem(
                         title = "Описание и размеры",
@@ -236,7 +209,6 @@ fun ProductDetailSuccess(
             }
         }
 
-        // ===== ADD TO CART =====
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -258,7 +230,6 @@ fun ProductDetailSuccess(
             }
         }
 
-        // ===== OVERLAY =====
         if (showDescription) {
             ProductDescriptionOverlay(
                 product = product.product,
@@ -280,7 +251,7 @@ fun ProductDescriptionOverlay(
             .clickable(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }
-            ) {} // Consume clicks
+            ) {}
     ) {
         Column(
             modifier = Modifier
@@ -375,23 +346,3 @@ fun AccordionItem(title: String, onClick: () -> Unit = {}) {
         }
     }
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun ProductDetailPreview() {
-//    ProductDetailSuccess(
-//        onBackClick = {},
-//        product = Product(
-//            id = 1,
-//            name = "Лонгслив из хлопка Одежда для отдыха / Cruise черно-молочная полоска",
-//            article = "BY001",
-//            price = 5990,
-//            oldPrice = 7990,
-//            rating = 4.8f,
-//            reviewsCount = 145,
-//            brand = "SELA",
-//            description = "Лонгслив из мягкого хлопка в рубчик — базовая вещь для вашего гардероба. Модель с глубоким круглым вырезом и длинными рукавами.\n\n• Облегающий крой\n• Мягкий трикотаж в рубчик",
-//            category = "Платья"
-//        )
-//    )
-//}

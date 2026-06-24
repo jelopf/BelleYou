@@ -47,10 +47,6 @@ class ProductDetailViewModel(
         }
     }
 
-    // =========================
-    // USER ACTIONS
-    // =========================
-
     fun selectSize(size: String) {
         _uiState.value = _uiState.value.copy(
             selectedSize = size

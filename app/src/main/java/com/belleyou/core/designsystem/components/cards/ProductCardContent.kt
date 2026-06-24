@@ -2,7 +2,6 @@ package com.belleyou.core.designsystem.components.cards
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -52,7 +51,6 @@ fun ProductCardContent(
             .clickable { onClick() }
     ) {
 
-        // ===== IMAGE =====
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -77,12 +75,10 @@ fun ProductCardContent(
             }
         }
 
-        // ===== INFO =====
         ProductInfoBlock(product)
 
         Spacer(Modifier.height(4.dp))
 
-        // ===== SIZE =====
         if (showSizeSelector) {
             SizeSelector(
                 sizes = sizes,
@@ -98,7 +94,6 @@ fun ProductCardContent(
             Spacer(Modifier.height(12.dp))
         }
 
-        // ===== CART =====
         if (showInCartButton) {
             InCartButton(onClick = onAddToCartClick)
         }

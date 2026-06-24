@@ -22,4 +22,16 @@ class WishlistViewModel : ViewModel() {
             selectedWishlistIndex = index
         )
     }
+
+    fun toggleFavorite(productId: Int) {
+        val current = _uiState.value.favorites.toMutableSet()
+
+        if (!current.add(productId)) {
+            current.remove(productId)
+        }
+
+        _uiState.value = _uiState.value.copy(
+            favorites = current
+        )
+    }
 }

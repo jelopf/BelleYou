@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -66,17 +65,15 @@ fun HomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        // 🔥 HEADER (скроллится вместе с экраном)
         item {
             HeaderBelleYou()
         }
 
-        // 🔥 BANNER
         item {
             HorizontalPager(
                 count = 5,
                 state = pagerState
-            ) { page ->
+            ) {
                 Image(
                     painter = painterResource(R.drawable.slide),
                     contentDescription = null,
@@ -96,7 +93,6 @@ fun HomeScreen(
             )
         }
 
-        // 🔥 STICKY SEARCH (фиксируется)
         stickyHeader {
             Column(
                 modifier = Modifier
@@ -163,7 +159,6 @@ fun HomeScreen(
         }
 
         val rows = filteredProducts.chunked(2)
-        // 🔥 PRODUCTS GRID (обычный scroll внутри LazyColumn)
         itemsIndexed(rows) { index, rowItems ->
 
             Row(
@@ -176,11 +171,16 @@ fun HomeScreen(
                     Box(modifier = Modifier.weight(1f)) {
                         ProductCard(
                             uiModel = uiModel,
-                            isFavorite = false,
+                            isFavorite = uiState.favorites.contains(uiModel.product.id),
                             showFavoriteIcon = true,
                             modifier = Modifier.fillMaxWidth(),
                             onClick = {
                                 onProductClick(uiModel.product.id)
+                            },
+                            onFavoriteClick = {
+                                viewModel.toggleFavorite(
+                                    uiModel.product.id
+                                )
                             }
                         )
                     }

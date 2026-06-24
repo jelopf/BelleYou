@@ -117,7 +117,10 @@ fun WishlistScreen(
                     showSizeSelector = true,
                     showInCartButton = true,
                     showFavoriteIcon = true,
-                    isFavorite = true
+                    isFavorite = uiState.favorites.contains(product.product.id),
+                    onFavoriteClick = {
+                        viewModel.toggleFavorite(product.product.id)
+                    }
                 )
             }
         }

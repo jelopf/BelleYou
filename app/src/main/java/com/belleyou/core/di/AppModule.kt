@@ -10,6 +10,7 @@ import com.belleyou.feature.cart.domain.usecase.GetCartItemsUseCase
 import com.belleyou.feature.cart.domain.usecase.IncreaseQuantityUseCase
 import com.belleyou.feature.cart.domain.usecase.RemoveFromCartUseCase
 import com.belleyou.feature.cart.ui.CartViewModel
+import com.belleyou.feature.category.ui.CategoryViewModel
 import com.belleyou.feature.home.ui.HomeViewModel
 import com.belleyou.feature.product.ui.ProductDetailViewModel
 import com.belleyou.feature.product.domain.ProductRepository
@@ -23,7 +24,6 @@ import org.koin.dsl.module
 
 val appModule = module {
 
-    // Repository
     single<ProductRepository> {
         ProductRepositoryImpl()
     }
@@ -70,7 +70,6 @@ val appModule = module {
         CalculateCartTotalUseCase()
     }
 
-    // ViewModel
     viewModel {
         HomeViewModel(get())
     }
@@ -93,6 +92,10 @@ val appModule = module {
             clearCartUseCase = get(),
             calculateCartTotalUseCase = get()
         )
+    }
+
+    viewModel {
+        CategoryViewModel(get())
     }
 
     viewModel {

@@ -1,4 +1,4 @@
-package com.belleyou.core.designsystem.components.cards
+package com.belleyou.feature.cart.domain.model
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -45,20 +45,17 @@ fun ProductCardCart(
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
 
-        // ===== IMAGE =====
         Box(
             modifier = Modifier
                 .size(66.dp, 100.dp)
                 .background(colorResource(R.color.belle_blue))
         )
 
-        // ===== CONTENT =====
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
 
-            // ===== TITLE + PRICE =====
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -81,7 +78,6 @@ fun ProductCardCart(
                 )
             }
 
-            // ===== ARTICLE =====
             Row {
                 Text(
                     text = "арт.",
@@ -98,7 +94,6 @@ fun ProductCardCart(
                 )
             }
 
-            // ===== COLOR (mock пока можно оставить) =====
             Row {
                 Text(
                     text = "Цвет:",
@@ -117,14 +112,12 @@ fun ProductCardCart(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // ===== ACTIONS =====
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
-                // ===== QUANTITY =====
                 Row(
                     modifier = Modifier
                         .border(
@@ -157,7 +150,6 @@ fun ProductCardCart(
                     }
                 }
 
-                // ===== DELETE =====
                 Icon(
                     painter = painterResource(id = R.drawable.ic_cart_delete_item),
                     contentDescription = "Удалить",

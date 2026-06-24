@@ -1,8 +1,7 @@
-package com.belleyou.feature.home.ui
+package com.belleyou.feature.category.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.belleyou.core.model.Product
 import com.belleyou.core.model.toUiModel
 import com.belleyou.feature.product.domain.usecase.GetProductsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,47 +9,40 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class HomeViewModel(
+class CategoryViewModel(
     private val getProductsUseCase: GetProductsUseCase
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(HomeUiState())
+    private val _uiState = MutableStateFlow(CategoryUiState())
     val uiState = _uiState.asStateFlow()
 
-    init {
-        loadProducts()
-    }
-
-    private fun loadProducts() {
+    fun load(categoryName: String) {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-
             val products = getProductsUseCase()
+                .filter { it.category == categoryName }
+                .map { it.toUiModel() }
 
-            _uiState.update {
-                it.copy(
-                    products = products.map(Product::toUiModel),
-                    isLoading = false
-                )
-            }
-        }
-    }
-
-    fun onSearchQueryChange(query: String) {
-        _uiState.update {
-            it.copy(searchQuery = query)
+            _uiState.value = CategoryUiState(
+                products = products
+            )
         }
     }
 
     fun toggleFavorite(productId: Int) {
-        val favorites = _uiState.value.favorites.toMutableSet()
+
+        val favorites =
+            _uiState.value
+                .favorites
+                .toMutableSet()
 
         if (!favorites.add(productId)) {
             favorites.remove(productId)
         }
 
         _uiState.update {
-            it.copy(favorites = favorites)
+            it.copy(
+                favorites = favorites
+            )
         }
     }
 }

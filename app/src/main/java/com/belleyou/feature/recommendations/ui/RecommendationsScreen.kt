@@ -1,6 +1,5 @@
 package com.belleyou.feature.recommendations.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,9 +37,7 @@ fun RecommendationsScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(colorResource(R.color.white)),
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
@@ -93,7 +90,6 @@ fun RecommendationsScreen(
                 }
             }
 
-            // ACTIONS
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

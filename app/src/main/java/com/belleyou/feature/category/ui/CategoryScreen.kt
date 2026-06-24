@@ -17,29 +17,34 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.belleyou.app.R
-import com.belleyou.core.data.mock.fakeProducts
 import com.belleyou.core.designsystem.components.cards.ProductCard
 import com.belleyou.core.designsystem.components.layout.HeaderBelleYou
-import com.belleyou.core.model.toUiModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CategoryScreen(
     categoryName: String,
     onBackClick: () -> Unit,
-    onProductClick: (Int) -> Unit
+    onProductClick: (Int) -> Unit,
+    viewModel: CategoryViewModel = koinViewModel()
 ) {
     val scrollState = rememberScrollState()
+    val uiState by viewModel.uiState.collectAsState()
 
-    val filteredProducts = remember(categoryName) {
-        fakeProducts.filter { it.category == categoryName }
+    LaunchedEffect(categoryName) {
+        viewModel.load(categoryName)
     }
+
+    val filteredProducts = uiState.products
 
     Column(
         modifier = Modifier
@@ -67,9 +72,7 @@ fun CategoryScreen(
                 modifier = Modifier.weight(1f)
             )
 
-            IconButton(
-                onClick = onBackClick
-            ) {
+            IconButton(onClick = onBackClick) {
                 Icon(
                     imageVector = Icons.Default.Close,
                     contentDescription = "Закрыть",
@@ -100,18 +103,20 @@ fun CategoryScreen(
                     val firstIndex = row * 2
                     val secondIndex = firstIndex + 1
 
-                    // Левая карточка
                     if (firstIndex < filteredProducts.size) {
 
                         val product = filteredProducts[firstIndex]
 
                         ProductCard(
-                            uiModel = product.toUiModel(),
-                            isFavorite = false,
+                            uiModel = product,
+                            isFavorite = uiState.favorites.contains(product.product.id),
                             showFavoriteIcon = true,
                             modifier = Modifier.weight(1f),
                             onClick = {
-                                onProductClick(product.id)
+                                onProductClick(product.product.id)
+                            },
+                            onFavoriteClick = {
+                                viewModel.toggleFavorite(product.product.id)
                             }
                         )
 
@@ -119,18 +124,20 @@ fun CategoryScreen(
                         Spacer(modifier = Modifier.weight(1f))
                     }
 
-                    // Правая карточка
                     if (secondIndex < filteredProducts.size) {
 
                         val product = filteredProducts[secondIndex]
 
                         ProductCard(
-                            uiModel = product.toUiModel(),
-                            isFavorite = false,
+                            uiModel = product,
+                            isFavorite = uiState.favorites.contains(product.product.id),
                             showFavoriteIcon = true,
                             modifier = Modifier.weight(1f),
                             onClick = {
-                                onProductClick(product.id)
+                                onProductClick(product.product.id)
+                            },
+                            onFavoriteClick = {
+                                viewModel.toggleFavorite(product.product.id)
                             }
                         )
 

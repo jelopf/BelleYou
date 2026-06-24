@@ -1,6 +1,7 @@
 package com.belleyou.feature.cart.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -28,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.belleyou.app.R
-import com.belleyou.core.designsystem.components.cards.ProductCardCart
+import com.belleyou.feature.cart.domain.model.ProductCardCart
 import com.belleyou.core.designsystem.components.layout.HeaderBelleYou
 import org.koin.androidx.compose.koinViewModel
 
@@ -48,10 +49,7 @@ fun CartScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        // HEADER
-        HeaderBelleYou(
-            modifier = Modifier.padding(top = 8.dp)
-        )
+        HeaderBelleYou()
 
         HorizontalDivider(
             modifier = Modifier
@@ -63,7 +61,6 @@ fun CartScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // TITLE
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -87,7 +84,6 @@ fun CartScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // ITEMS
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -97,15 +93,18 @@ fun CartScreen(
         ) {
 
             if (uiState.cartItems.isEmpty()) {
-
-                Text(
-                    text = "Корзина пуста",
-                    fontSize = 14.sp,
-                    color = colorResource(R.color.gray_text)
-                )
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Корзина пуста",
+                        fontSize = 14.sp,
+                        color = colorResource(R.color.gray_text)
+                    )
+                }
 
             } else {
-
                 uiState.cartItems.forEach { item ->
 
                     ProductCardCart(
@@ -124,7 +123,6 @@ fun CartScreen(
             }
         }
 
-        // TOTAL + CHECKOUT
         Column(
             modifier = Modifier
                 .fillMaxWidth()
