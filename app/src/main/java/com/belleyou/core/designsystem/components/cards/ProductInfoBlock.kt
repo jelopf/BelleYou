@@ -18,11 +18,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.belleyou.app.R
-import com.belleyou.core.model.ProductUiModel
-
+import com.belleyou.core.model.Product
 
 @Composable
-fun ProductInfoBlock(product: ProductUiModel) {
+fun ProductInfoBlock(product: Product) {
 
     Column(
         modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp),
@@ -35,7 +34,7 @@ fun ProductInfoBlock(product: ProductUiModel) {
         ) {
 
             Row {
-                product.product.oldPrice?.let {
+                product.oldPrice?.let {
                     Text(
                         text = "$it ₽",
                         fontSize = 14.sp,
@@ -46,42 +45,20 @@ fun ProductInfoBlock(product: ProductUiModel) {
                 }
 
                 Text(
-                    text = "${product.product.price} ₽",
+                    text = "${product.price} ₽",
                     fontSize = 14.sp,
                     lineHeight = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = if (product.product.oldPrice != null)
+                    color = if (product.oldPrice != null)
                         colorResource(R.color.belle_red)
                     else
                         colorResource(R.color.black)
                 )
             }
-
-            Spacer(Modifier.weight(1f))
-
-            Text(
-                text = "${product.product.rating} ★",
-                fontSize = 14.sp,
-                lineHeight = 14.sp
-            )
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(product.product.brand, fontSize = 14.sp)
-            Text(
-                "(${product.product.reviewsCount})",
-                fontSize = 14.sp,
-                lineHeight = 14.sp,
-                color = colorResource(R.color.belle_gray)
-            )
         }
 
         Text(
-            text = product.product.name,
+            text = product.name,
             fontSize = 14.sp,
             lineHeight = 14.sp,
             maxLines = 1,

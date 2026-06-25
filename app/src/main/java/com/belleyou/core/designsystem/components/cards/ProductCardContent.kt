@@ -22,13 +22,12 @@ import androidx.compose.ui.unit.dp
 import com.belleyou.app.R
 import com.belleyou.core.designsystem.components.buttons.InCartButton
 import com.belleyou.core.designsystem.components.layout.SizeSelector
-import com.belleyou.core.model.ProductUiModel
-
+import com.belleyou.core.model.Product
 
 @Composable
 fun ProductCardContent(
     modifier: Modifier = Modifier,
-    product: ProductUiModel,
+    product: Product,
     isFavorite: Boolean,
     selectedSize: String?,
     sizes: List<String>,

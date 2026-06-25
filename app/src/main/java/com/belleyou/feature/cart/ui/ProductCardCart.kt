@@ -1,4 +1,4 @@
-package com.belleyou.feature.cart.domain.model
+package com.belleyou.feature.cart.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -33,7 +33,8 @@ fun ProductCardCart(
     item: CartItem,
     onIncrease: () -> Unit,
     onDecrease: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onClick: () -> Unit
 ) {
 
     val product = item.product
@@ -49,10 +50,11 @@ fun ProductCardCart(
             modifier = Modifier
                 .size(66.dp, 100.dp)
                 .background(colorResource(R.color.belle_blue))
+                .clickable { onClick() }
         )
 
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().clickable { onClick() },
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
 

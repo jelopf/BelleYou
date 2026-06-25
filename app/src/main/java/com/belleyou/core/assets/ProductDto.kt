@@ -1,6 +1,9 @@
-package com.belleyou.core.model
+package com.belleyou.core.assets
 
-data class Product(
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class ProductDto(
     val id: Int,
     val name: String,
     val article: String,

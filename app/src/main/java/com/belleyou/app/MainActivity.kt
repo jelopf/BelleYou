@@ -9,7 +9,6 @@ import androidx.navigation.compose.rememberNavController
 import com.belleyou.app.navigation.AppNavHost
 import com.belleyou.core.designsystem.theme.BelleYouTheme
 
-
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -34,12 +34,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.belleyou.app.R
 import com.belleyou.core.designsystem.components.cards.ProductCard
 import com.belleyou.core.designsystem.components.layout.HeaderBelleYou
+import com.belleyou.feature.wishlist.WishlistViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -104,24 +104,39 @@ fun WishlistScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 18.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        val rows = uiState.products.chunked(2)
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            uiState.products.take(2).forEach { product ->
-                ProductCard(
-                    uiModel = product,
-                    modifier = Modifier.weight(1f),
-                    showSizeSelector = true,
-                    showInCartButton = true,
-                    showFavoriteIcon = true,
-                    isFavorite = uiState.favorites.contains(product.product.id),
-                    onFavoriteClick = {
-                        viewModel.toggleFavorite(product.product.id)
+            rows.forEach { rowItems ->
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 18.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    rowItems.forEach { product ->
+                        ProductCard(
+                            product = product,
+                            modifier = Modifier.weight(1f),
+                            showSizeSelector = true,
+                            showInCartButton = true,
+                            showFavoriteIcon = true,
+                            isFavorite = uiState.favorites.contains(product.id),
+                            onFavoriteClick = {
+                                viewModel.toggleFavorite(product.id)
+                            },
+                            onAddToCartClick = {
+                                viewModel.addToCart(product.id)
+                            }
+                        )
                     }
-                )
+
+                    if (rowItems.size < 2) {
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
+                }
             }
         }
     }
@@ -212,10 +227,4 @@ private fun WishlistButton(
             maxLines = 1
         )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun WishlistsScreenPreview() {
-    WishlistScreen()
 }

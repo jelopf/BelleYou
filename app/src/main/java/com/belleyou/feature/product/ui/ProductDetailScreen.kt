@@ -28,7 +28,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -40,10 +39,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.rememberAsyncImagePainter
 import com.belleyou.app.R
 import com.belleyou.core.designsystem.components.layout.HeaderBelleYouWithBack
 import com.belleyou.core.model.Product
-import com.belleyou.core.model.ProductUiModel
+import com.belleyou.feature.product.ProductDetailViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -53,14 +54,15 @@ fun ProductDetailScreen(
     onBackClick: () -> Unit,
     viewModel: ProductDetailViewModel = koinViewModel { parametersOf(productId) }
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     ProductDetailContent(
         uiState = uiState,
         onBackClick = onBackClick,
         onSelectSize = viewModel::selectSize,
         onToggleDescription = viewModel::toggleDescription,
-        onCloseDescription = viewModel::closeDescription
+        onCloseDescription = viewModel::closeDescription,
+        onAddToCart = viewModel::addToCart
     )
 }
 
@@ -70,7 +72,8 @@ fun ProductDetailContent(
     onBackClick: () -> Unit,
     onSelectSize: (String) -> Unit,
     onToggleDescription: () -> Unit,
-    onCloseDescription: () -> Unit
+    onCloseDescription: () -> Unit,
+    onAddToCart: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
 
@@ -94,7 +97,8 @@ fun ProductDetailContent(
                     onBackClick = onBackClick,
                     onSelectSize = onSelectSize,
                     onToggleDescription = onToggleDescription,
-                    onCloseDescription = onCloseDescription
+                    onCloseDescription = onCloseDescription,
+                    onAddToCart = onAddToCart
                 )
             }
         }
@@ -103,13 +107,14 @@ fun ProductDetailContent(
 
 @Composable
 fun ProductDetailSuccess(
-    product: ProductUiModel,
+    product: Product,
     selectedSize: String,
     showDescription: Boolean,
     onBackClick: () -> Unit,
     onSelectSize: (String) -> Unit,
     onToggleDescription: () -> Unit,
-    onCloseDescription: () -> Unit
+    onCloseDescription: () -> Unit,
+    onAddToCart: () -> Unit
 ) {
     val scrollState = rememberScrollState()
 
@@ -129,7 +134,7 @@ fun ProductDetailSuccess(
 
             Image(
                 painter = painterResource(id = R.drawable.slide),
-                contentDescription = product.product.name,
+                contentDescription = product.name,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(450.dp),
@@ -145,7 +150,7 @@ fun ProductDetailSuccess(
             ) {
 
                 Text(
-                    text = product.product.name,
+                    text = product.name,
                     fontSize = 14.sp,
                     lineHeight = 18.sp
                 )
@@ -153,9 +158,9 @@ fun ProductDetailSuccess(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    product.images.take(2).forEach { imageRes ->
+                    product.variantImages?.take(2)?.forEach { imageUrl ->
                         Image(
-                            painter = painterResource(imageRes),
+                            painter = rememberAsyncImagePainter(imageUrl),
                             contentDescription = null,
                             modifier = Modifier.size(52.dp, 70.dp),
                             contentScale = ContentScale.Crop
@@ -184,7 +189,7 @@ fun ProductDetailSuccess(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    product.sizes.forEach { size ->
+                    product.sizes?.forEach { size ->
                         SizeItem(
                             size = size,
                             isSelected = size == selectedSize,
@@ -217,7 +222,7 @@ fun ProductDetailSuccess(
         ) {
 
             Button(
-                onClick = { /* add to cart */ },
+                onClick = onAddToCart ,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(44.dp),
@@ -232,7 +237,7 @@ fun ProductDetailSuccess(
 
         if (showDescription) {
             ProductDescriptionOverlay(
-                product = product.product,
+                product = product,
                 onClose = onCloseDescription
             )
         }

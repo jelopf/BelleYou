@@ -1,5 +1,7 @@
 package com.belleyou.app.navigation
 
+import android.net.Uri
+
 sealed class Routes(val route: String) {
 
     data object Home : Routes("home")
@@ -24,7 +26,7 @@ sealed class Routes(val route: String) {
         const val ARG_NAME = "categoryName"
 
         fun createRoute(categoryName: String): String {
-            return "category/$categoryName"
+            return "category/${Uri.encode(categoryName)}"
         }
     }
 }

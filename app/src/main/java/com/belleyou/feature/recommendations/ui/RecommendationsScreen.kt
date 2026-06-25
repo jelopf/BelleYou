@@ -20,21 +20,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.belleyou.app.R
 import com.belleyou.core.designsystem.components.buttons.SquareButton
 import com.belleyou.core.designsystem.components.cards.ProductCard
 import com.belleyou.core.designsystem.components.layout.HeaderBelleYou
+import com.belleyou.feature.recommendations.RecommendationsViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun RecommendationsScreen(
-    viewModel: RecommendationsViewModel = koinViewModel()
+    viewModel: RecommendationsViewModel = koinViewModel(),
+    onProductClick: (Int) -> Unit
 ) {
-
     val uiState by viewModel.uiState.collectAsState()
+
+    val product = uiState.products.getOrNull(uiState.currentIndex)
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -71,20 +73,19 @@ fun RecommendationsScreen(
                         CircularProgressIndicator()
                     }
 
-                    uiState.products.isEmpty() -> {
+                    product == null -> {
                         Text("Нет доступных товаров")
                     }
 
                     else -> {
-                        val product = uiState.products.first()
-
                         ProductCard(
-                            uiModel = product,
-                            isFavorite = false,
+                            product = product,
+                            isFavorite = uiState.favorites.contains(product.id),
                             showFavoriteIcon = false,
-                            onClick = { /* open detail */ },
-                            onFavoriteClick = { /* toggle favorite */ },
-                            onAddToCartClick = { /* add to cart */ }
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {
+                                onProductClick(product.id)
+                            }
                         )
                     }
                 }
@@ -103,7 +104,7 @@ fun RecommendationsScreen(
                     contentDescription = "Пропустить",
                     mainColor = colorResource(R.color.belle_red),
                     modifier = Modifier.size(40.dp),
-                    onClick = { /* next product */ }
+                    onClick = viewModel::nextProduct
                 )
 
                 SquareButton(
@@ -111,7 +112,7 @@ fun RecommendationsScreen(
                     contentDescription = "В вишлист",
                     mainColor = colorResource(R.color.belle_blue_dark),
                     modifier = Modifier.size(40.dp),
-                    onClick = { /* toggle favorite */ }
+                    onClick = viewModel::toggleFavorite
                 )
 
                 SquareButton(
@@ -119,16 +120,9 @@ fun RecommendationsScreen(
                     contentDescription = "В корзину",
                     mainColor = colorResource(R.color.belle_brown),
                     modifier = Modifier.size(40.dp),
-                    onClick = { /* add to cart */ }
+                    onClick = viewModel::addToCart
                 )
             }
         }
     }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun RecommendationsScreenPreview() {
-    RecommendationsScreen()
 }

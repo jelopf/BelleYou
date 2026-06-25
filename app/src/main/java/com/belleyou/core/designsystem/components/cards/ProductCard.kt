@@ -6,11 +6,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.belleyou.core.model.ProductUiModel
+import com.belleyou.core.model.Product
 
 @Composable
 fun ProductCard(
-    uiModel: ProductUiModel,
+    product: Product,
     modifier: Modifier = Modifier,
     isFavorite: Boolean,
     showSizeSelector: Boolean = false,
@@ -21,26 +21,23 @@ fun ProductCard(
     onAddToCartClick: (String?) -> Unit = {},
 ) {
 
-    var selectedSize by remember(uiModel.product.id) {
+    var selectedSize by remember(product.id) {
         mutableStateOf<String?>(null)
     }
 
-    var sizeExpanded by remember(uiModel.product.id) {
+    var sizeExpanded by remember(product.id) {
         mutableStateOf(false)
     }
 
     ProductCardContent(
         modifier = modifier,
-        product = uiModel,
+        product = product,
         isFavorite = isFavorite,
         selectedSize = selectedSize,
-        sizes = uiModel.sizes,
+        sizes = product.sizes ?: emptyList(),
         showFavoriteIcon = showFavoriteIcon,
         showSizeSelector = showSizeSelector,
         showInCartButton = showInCartButton,
-
-        onClick = onClick,
-        onFavoriteClick = onFavoriteClick,
 
         expanded = sizeExpanded,
         onExpandedChange = { sizeExpanded = it },
@@ -49,6 +46,8 @@ fun ProductCard(
             selectedSize = it
         },
 
+        onClick = onClick,
+        onFavoriteClick = onFavoriteClick,
         onAddToCartClick = {
             onAddToCartClick(selectedSize)
         }

@@ -1,10 +1,10 @@
 package com.belleyou.feature.product.ui
 
-import com.belleyou.core.model.ProductUiModel
+import com.belleyou.core.model.Product
 
 data class ProductDetailUiState(
     val isLoading: Boolean = false,
-    val product: ProductUiModel? = null,
+    val product: Product? = null,
     val error: String? = null,
     val selectedSize: String = "",
     val isFavorite: Boolean = false,

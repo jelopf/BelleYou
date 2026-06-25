@@ -30,13 +30,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.belleyou.app.R
 import com.belleyou.core.designsystem.components.cards.ProductCard
 import com.belleyou.core.designsystem.components.layout.CategoryRow
 import com.belleyou.core.designsystem.components.layout.HeaderBelleYou
+import com.belleyou.feature.home.HomeViewModel
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
@@ -53,8 +53,8 @@ fun HomeScreen(
     val filteredProducts = remember(uiState.products, uiState.searchQuery) {
         uiState.products.filter { product ->
             uiState.searchQuery.isBlank() ||
-                    product.product.name.contains(uiState.searchQuery, true) ||
-                    product.product.category.contains(uiState.searchQuery, true)
+                    product.name.contains(uiState.searchQuery, true) ||
+                    product.category.contains(uiState.searchQuery, true)
         }
     }
 
@@ -170,17 +170,15 @@ fun HomeScreen(
                 rowItems.forEach { uiModel ->
                     Box(modifier = Modifier.weight(1f)) {
                         ProductCard(
-                            uiModel = uiModel,
-                            isFavorite = uiState.favorites.contains(uiModel.product.id),
+                            product = uiModel,
+                            isFavorite = uiState.favorites.contains(uiModel.id),
                             showFavoriteIcon = true,
                             modifier = Modifier.fillMaxWidth(),
                             onClick = {
-                                onProductClick(uiModel.product.id)
+                                onProductClick(uiModel.id)
                             },
                             onFavoriteClick = {
-                                viewModel.toggleFavorite(
-                                    uiModel.product.id
-                                )
+                                viewModel.toggleFavorite(uiModel.id)
                             }
                         )
                     }
@@ -196,10 +194,4 @@ fun HomeScreen(
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview() {
-    HomeScreen()
 }

@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import com.belleyou.app.R
 import com.belleyou.core.designsystem.components.cards.ProductCard
 import com.belleyou.core.designsystem.components.layout.HeaderBelleYou
+import com.belleyou.feature.category.CategoryViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -108,15 +109,15 @@ fun CategoryScreen(
                         val product = filteredProducts[firstIndex]
 
                         ProductCard(
-                            uiModel = product,
-                            isFavorite = uiState.favorites.contains(product.product.id),
+                            product = product,
+                            isFavorite = uiState.favorites.contains(product.id),
                             showFavoriteIcon = true,
                             modifier = Modifier.weight(1f),
                             onClick = {
-                                onProductClick(product.product.id)
+                                onProductClick(product.id)
                             },
                             onFavoriteClick = {
-                                viewModel.toggleFavorite(product.product.id)
+                                viewModel.toggleFavorite(product.id)
                             }
                         )
 
@@ -129,15 +130,15 @@ fun CategoryScreen(
                         val product = filteredProducts[secondIndex]
 
                         ProductCard(
-                            uiModel = product,
-                            isFavorite = uiState.favorites.contains(product.product.id),
+                            product = product,
+                            isFavorite = uiState.favorites.contains(product.id),
                             showFavoriteIcon = true,
                             modifier = Modifier.weight(1f),
                             onClick = {
-                                onProductClick(product.product.id)
+                                onProductClick(product.id)
                             },
                             onFavoriteClick = {
-                                viewModel.toggleFavorite(product.product.id)
+                                viewModel.toggleFavorite(product.id)
                             }
                         )
 

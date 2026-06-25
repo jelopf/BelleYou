@@ -1,5 +1,6 @@
 package com.belleyou.app.navigation
 
+import android.net.Uri
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -54,7 +55,11 @@ fun AppNavHost(
             }
 
             composable(Routes.Recommendations.route) {
-                RecommendationsScreen()
+                RecommendationsScreen(
+                    onProductClick = { productId ->
+                        navController.navigate(Routes.ProductDetail.createRoute(productId))
+                    }
+                )
             }
 
             composable(Routes.Wishlist.route) {
@@ -62,7 +67,13 @@ fun AppNavHost(
             }
 
             composable(Routes.Cart.route) {
-                CartScreen()
+                CartScreen(
+                    onProductClick = { productId ->
+                        navController.navigate(
+                            Routes.ProductDetail.createRoute(productId)
+                        )
+                    }
+                )
             }
 
             composable(
@@ -74,10 +85,9 @@ fun AppNavHost(
                 )
             ) { backStackEntry ->
 
-                val productId =
-                    backStackEntry.arguments
+                val productId = backStackEntry.arguments
                         ?.getInt(Routes.ProductDetail.ARG_ID)
-                        ?: 0
+                        ?: return@composable
 
                 ProductDetailScreen(
                     productId = productId,
@@ -97,9 +107,11 @@ fun AppNavHost(
             ) { backStackEntry ->
 
                 val categoryName =
-                    backStackEntry.arguments
-                        ?.getString(Routes.Category.ARG_NAME)
-                        ?: "Категория"
+                    Uri.decode(
+                        backStackEntry.arguments
+                            ?.getString(Routes.Category.ARG_NAME)
+                            ?: "Категория"
+                    )
 
                 CategoryScreen(
                     categoryName = categoryName,

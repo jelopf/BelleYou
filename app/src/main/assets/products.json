@@ -1,0 +1,43 @@
+[
+  {
+    "id": 1,
+    "name": "Лонгслив из хлопка",
+    "article": "BY001",
+    "price": 5990,
+    "oldPrice": 7990,
+    "imageUrl": "file:///android_asset/products/longsleeve_1.jpg",
+    "description": "Мягкий хлопок в рубчик — базовая вещь для вашего гардероба.",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "variantImages": [
+      "file:///android_asset/products/longsleeve_1.jpg",
+      "file:///android_asset/products/longsleeve_2.jpg"
+    ],
+    "category": "Топы"
+  },
+  {
+    "id": 2,
+    "name": "Кружевной комплект",
+    "article": "BY002",
+    "price": 4290,
+    "oldPrice": null,
+    "imageUrl": "file:///android_asset/products/lace_set_1.jpg",
+    "description": "Элегантный кружевной комплект для особых случаев.",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L"
+    ],
+    "variantImages": [
+      "file:///android_asset/products/lace_set_1.jpg",
+      "file:///android_asset/products/lace_set_2.jpg"
+    ],
+    "category": "Нижнее белье"
+  }
+]

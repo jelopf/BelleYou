@@ -1,104 +1,84 @@
 package com.belleyou.core.di
 
-import com.belleyou.feature.cart.domain.CartRepository
-import com.belleyou.feature.cart.data.CartRepositoryImpl
-import com.belleyou.feature.cart.domain.usecase.AddToCartUseCase
-import com.belleyou.feature.cart.domain.usecase.CalculateCartTotalUseCase
-import com.belleyou.feature.cart.domain.usecase.ClearCartUseCase
-import com.belleyou.feature.cart.domain.usecase.DecreaseQuantityUseCase
-import com.belleyou.feature.cart.domain.usecase.GetCartItemsUseCase
-import com.belleyou.feature.cart.domain.usecase.IncreaseQuantityUseCase
-import com.belleyou.feature.cart.domain.usecase.RemoveFromCartUseCase
-import com.belleyou.feature.cart.ui.CartViewModel
-import com.belleyou.feature.category.ui.CategoryViewModel
-import com.belleyou.feature.home.ui.HomeViewModel
-import com.belleyou.feature.product.ui.ProductDetailViewModel
-import com.belleyou.feature.product.domain.ProductRepository
-import com.belleyou.feature.product.data.ProductRepositoryImpl
-import com.belleyou.feature.product.domain.usecase.GetProductUseCase
-import com.belleyou.feature.product.domain.usecase.GetProductsUseCase
-import com.belleyou.feature.recommendations.ui.RecommendationsViewModel
-import com.belleyou.feature.wishlist.ui.WishlistViewModel
+import com.belleyou.core.repository.CartRepository
+import com.belleyou.core.repository.CartRepositoryImpl
+import com.belleyou.core.repository.FavoritesRepository
+import com.belleyou.core.repository.FavoritesRepositoryImpl
+import com.belleyou.core.repository.ProductRepository
+import com.belleyou.core.repository.ProductRepositoryImpl
+import com.belleyou.core.assets.ProductJsonDataSource
+import com.belleyou.feature.cart.CartViewModel
+import com.belleyou.feature.category.CategoryViewModel
+import com.belleyou.feature.home.HomeViewModel
+import com.belleyou.feature.product.ProductDetailViewModel
+import com.belleyou.feature.recommendations.RecommendationsViewModel
+import com.belleyou.feature.wishlist.WishlistViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val appModule = module {
 
+    // Data Sources
+    single {
+        ProductJsonDataSource(get())
+    }
+
+    // Repositories
     single<ProductRepository> {
-        ProductRepositoryImpl()
+        ProductRepositoryImpl(get())
     }
 
     single<CartRepository> {
-        CartRepositoryImpl()
+        CartRepositoryImpl(get())
     }
 
-    // Product use cases
-    single {
-        GetProductsUseCase(get())
+    single<FavoritesRepository> {
+        FavoritesRepositoryImpl(get())
     }
 
-    single {
-        GetProductUseCase(get())
-    }
-
-    // Cart use cases
-    single {
-        GetCartItemsUseCase(get())
-    }
-
-    single {
-        AddToCartUseCase(get())
-    }
-
-    single {
-        RemoveFromCartUseCase(get())
-    }
-
-    single {
-        IncreaseQuantityUseCase(get())
-    }
-
-    single {
-        DecreaseQuantityUseCase(get())
-    }
-
-    single {
-        ClearCartUseCase(get())
-    }
-
-    single {
-        CalculateCartTotalUseCase()
-    }
-
+    // ViewModels
     viewModel {
-        HomeViewModel(get())
-    }
-
-    viewModel { (productId: Int) ->
-        ProductDetailViewModel(productId, get())
-    }
-
-    viewModel {
-        RecommendationsViewModel(get())
-    }
-
-    viewModel {
-        CartViewModel(
-            getCartItemsUseCase = get(),
-            addToCartUseCase = get(),
-            removeFromCartUseCase = get(),
-            increaseQuantityUseCase = get(),
-            decreaseQuantityUseCase = get(),
-            clearCartUseCase = get(),
-            calculateCartTotalUseCase = get()
+        HomeViewModel(
+            get(),
+            get()
         )
     }
 
     viewModel {
-        CategoryViewModel(get())
+        CategoryViewModel(
+            get(),
+            get()
+        )
     }
 
     viewModel {
-        WishlistViewModel()
+        RecommendationsViewModel(
+            get(),
+            get(),
+            get()
+        )
+    }
+
+    viewModel {
+        CartViewModel(
+            get(),
+            get()
+        )
+    }
+
+    viewModel { (productId: Int) ->
+        ProductDetailViewModel(
+            productId,
+            get(),
+            get()
+        )
+    }
+
+    viewModel {
+        WishlistViewModel(
+            get(),
+            get(),
+            get()
+        )
     }
 }

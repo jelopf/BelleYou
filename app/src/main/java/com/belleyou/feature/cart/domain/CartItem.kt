@@ -4,5 +4,5 @@ import com.belleyou.core.model.Product
 
 data class CartItem(
     val product: Product,
-    val quantity: Int = 1
+    val quantity: Int
 )
