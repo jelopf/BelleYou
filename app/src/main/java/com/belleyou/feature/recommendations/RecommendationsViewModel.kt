@@ -66,7 +66,10 @@ class RecommendationsViewModel(
     fun addToCart() {
         currentProduct()?.let { product ->
             viewModelScope.launch {
-                cartRepository.add(product.id)
+                cartRepository.add(
+                    product.id,
+                    product.sizes.firstOrNull().orEmpty()
+                )
             }
         }
     }

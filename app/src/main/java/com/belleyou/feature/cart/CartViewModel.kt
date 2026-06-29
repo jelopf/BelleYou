@@ -31,14 +31,15 @@ class CartViewModel(
                 productRepository.getProductsFlow()
             ) { cartMap, products ->
 
-                val cartItems = cartMap.mapNotNull { (productId, count) ->
+                val cartItems = cartMap.mapNotNull { (key, count) ->
 
-                    val product = products.find { it.id == productId }
+                    val product = products.find { it.id == key.productId }
 
                     product?.let {
                         CartItem(
                             product = it,
-                            quantity = count
+                            quantity = count,
+                            selectedSize = key.size
                         )
                     }
                 }
@@ -57,27 +58,21 @@ class CartViewModel(
         }
     }
 
-    fun increaseQuantity(productId: Int) {
+    fun increaseQuantity(productId: Int, size: String) {
         viewModelScope.launch {
-            cartRepository.add(productId)
+            cartRepository.add(productId, size)
         }
     }
 
-    fun decreaseQuantity(productId: Int) {
+    fun decreaseQuantity(productId: Int, size: String) {
         viewModelScope.launch {
-            cartRepository.remove(productId)
+            cartRepository.remove(productId, size)
         }
     }
 
-    fun removeFromCart(productId: Int) {
+    fun removeFromCart(productId: Int, size: String) {
         viewModelScope.launch {
-            cartRepository.remove(productId)
-        }
-    }
-
-    fun clearCart() {
-        viewModelScope.launch {
-            cartRepository.clear()
+            cartRepository.removeAll(productId, size)
         }
     }
 }

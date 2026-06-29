@@ -42,11 +42,11 @@ class WishlistViewModel(
                 favoritesRepository.favoritesFlow
             ) { products, favorites ->
 
-                val filtered = products.filter {
-                    favorites.contains(it.id)
-                }
+                val filtered = products.filter { it.id in favorites }
 
-                _uiState.value.copy(
+                WishlistUiState(
+                    wishlists = _uiState.value.wishlists,
+                    selectedWishlistIndex = _uiState.value.selectedWishlistIndex,
                     products = filtered,
                     favorites = favorites
                 )
@@ -70,8 +70,13 @@ class WishlistViewModel(
     }
 
     fun addToCart(productId: Int) {
+        val product = _uiState.value.products.find { it.id == productId } ?: return
+
         viewModelScope.launch {
-            cartRepository.add(productId)
+            cartRepository.add(
+                product.id,
+                product.sizes.firstOrNull().orEmpty()
+            )
         }
     }
 }

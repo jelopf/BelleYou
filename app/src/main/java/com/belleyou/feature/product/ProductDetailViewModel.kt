@@ -37,7 +37,7 @@ class ProductDetailViewModel(
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     product = product,
-                    selectedSize = product.sizes?.firstOrNull().orEmpty(),
+                    selectedSize = product.sizes.firstOrNull().orEmpty(),
                     error = null
                 )
 
@@ -71,9 +71,10 @@ class ProductDetailViewModel(
 
     fun addToCart() {
         val product = _uiState.value.product ?: return
+        val size = _uiState.value.selectedSize
 
         viewModelScope.launch {
-            cartRepository.add(product.id)
+            cartRepository.add(product.id, size)
         }
     }
 }
