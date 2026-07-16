@@ -6,5 +6,6 @@ data class RecommendationsUiState(
     val isLoading: Boolean = false,
     val products: List<Product> = emptyList(),
     val favorites: Set<Int> = emptySet(),
-    val currentIndex: Int = 0
+    val currentIndex: Int = 0,
+    val showOnboarding: Boolean = true
 )

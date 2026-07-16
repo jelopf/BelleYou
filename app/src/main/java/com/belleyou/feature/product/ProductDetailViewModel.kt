@@ -3,6 +3,7 @@ package com.belleyou.feature.product
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.belleyou.core.repository.CartRepository
+import com.belleyou.core.repository.FavoritesRepository
 import com.belleyou.core.repository.ProductRepository
 import com.belleyou.feature.product.ui.ProductDetailUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +15,8 @@ import kotlinx.coroutines.launch
 class ProductDetailViewModel(
     private val productId: Int,
     private val productRepository: ProductRepository,
-    private val cartRepository: CartRepository
+    private val cartRepository: CartRepository,
+    private val favoritesRepository: FavoritesRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProductDetailUiState(isLoading = true))
@@ -22,31 +24,48 @@ class ProductDetailViewModel(
 
     init {
         loadProduct()
+        observeFavorite()
+    }
+
+    private fun observeFavorite() {
+        viewModelScope.launch {
+            favoritesRepository.favoritesFlow.collect { favorites ->
+                _uiState.update { it.copy(isFavorite = productId in favorites) }
+            }
+        }
     }
 
     private fun loadProduct() {
         viewModelScope.launch {
 
-            val product = productRepository
+            val allProducts = productRepository
                 .getProductsFlow()
                 .first()
-                .find { it.id == productId }
+
+            val product = allProducts.find { it.id == productId }
 
             if (product != null) {
 
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    product = product,
-                    selectedSize = product.sizes.firstOrNull().orEmpty(),
-                    error = null
-                )
+                _uiState.update { 
+                    it.copy(
+                        isLoading = false,
+                        product = product,
+                        selectedSize = product.sizes.firstOrNull().orEmpty(),
+                        relatedProducts = allProducts.shuffled().take(4),
+                        matchingProducts = allProducts.shuffled().take(4),
+                        recentlyViewed = allProducts.shuffled().take(4),
+                        error = null
+                    )
+                }
 
             } else {
 
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    error = "Product not found"
-                )
+                _uiState.update { 
+                    it.copy(
+                        isLoading = false,
+                        error = "Product not found"
+                    )
+                }
             }
         }
     }
@@ -66,6 +85,12 @@ class ProductDetailViewModel(
     fun closeDescription() {
         _uiState.update {
             it.copy(showDescription = false)
+        }
+    }
+
+    fun toggleFavorite() {
+        viewModelScope.launch {
+            favoritesRepository.toggleFavorite(productId)
         }
     }
 

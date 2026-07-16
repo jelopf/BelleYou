@@ -1,17 +1,18 @@
 package com.belleyou.core.designsystem.components.cards
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -21,48 +22,84 @@ import com.belleyou.app.R
 import com.belleyou.core.model.Product
 
 @Composable
-fun ProductInfoBlock(product: Product) {
+fun ProductInfoBlock(
+    product: Product,
+    showCartAction: Boolean = false,
+    onCartClick: () -> Unit = {}
+) {
 
     Column(
         modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Text(
+            text = product.name.uppercase(),
+            fontSize = 11.sp,
+            lineHeight = 13.sp,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            fontWeight = FontWeight.Normal,
+            color = colorResource(R.color.belle_black)
+        )
 
-            Row {
-                product.oldPrice?.let {
-                    Text(
-                        text = "$it ₽",
-                        fontSize = 14.sp,
-                        lineHeight = 14.sp,
-                        textDecoration = TextDecoration.LineThrough
+        // Color indicators
+        if (product.variantImages.isNotEmpty()) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.padding(vertical = 2.dp)
+            ) {
+                // Showing simple dots as color indicators
+                repeat(product.variantImages.size.coerceAtMost(3)) {
+                    Box(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .background(Color.LightGray, CircleShape)
+                            .border(0.5.dp, Color.Gray.copy(alpha = 0.2f), CircleShape)
                     )
-                    Spacer(Modifier.width(4.dp))
                 }
-
-                Text(
-                    text = "${product.price} ₽",
-                    fontSize = 14.sp,
-                    lineHeight = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = if (product.oldPrice != null)
-                        colorResource(R.color.belle_red)
-                    else
-                        colorResource(R.color.black)
-                )
             }
         }
 
-        Text(
-            text = product.name,
-            fontSize = 14.sp,
-            lineHeight = 14.sp,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "${product.price ?: 0} ₽",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = colorResource(R.color.belle_black)
+                    )
+                    
+                    product.oldPrice?.let {
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            text = "$it ₽",
+                            fontSize = 11.sp,
+                            textDecoration = TextDecoration.LineThrough,
+                            color = Color.Gray
+                        )
+                    }
+                }
+            }
+
+            if (showCartAction) {
+                IconButton(
+                    onClick = onCartClick,
+                    modifier = Modifier.size(24.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_cart),
+                        contentDescription = "Add to cart",
+                        tint = colorResource(R.color.belle_black),
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
+        }
     }
 }

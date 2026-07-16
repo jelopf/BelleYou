@@ -7,11 +7,14 @@ data class ProductDto(
     val id: Int,
     val name: String,
     val article: String,
-    val price: Int,
+    val price: Int? = null,
     val oldPrice: Int? = null,
-    val description: String,
-    val category: String,
+    val rating: Double? = null,
+    val reviewsCount: Int? = null,
+    val brand: String? = null,
     val imageUrl: String,
+    val description: String? = null,
     val variantImages: List<String>? = null,
-    val sizes: List<String>? = null
+    val sizes: List<String>? = null,
+    val category: String
 )

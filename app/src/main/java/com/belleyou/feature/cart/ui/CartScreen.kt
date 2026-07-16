@@ -1,200 +1,317 @@
 package com.belleyou.feature.cart.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.belleyou.app.R
-import com.belleyou.core.designsystem.components.layout.HeaderBelleYou
+import com.belleyou.core.designsystem.components.layout.ProductHorizontalRow
+import com.belleyou.core.model.Product
 import com.belleyou.feature.cart.CartViewModel
+import com.belleyou.feature.cart.domain.CartItem
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CartScreen(
     viewModel: CartViewModel = koinViewModel(),
-    onProductClick: (Int) -> Unit = {}
+    onProductClick: (Int) -> Unit = {},
+    onGoToCatalog: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    Scaffold(
-        bottomBar = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.background)
-                    .padding(horizontal = 30.dp, vertical = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
+    CartScreenContent(
+        uiState = uiState,
+        onProductClick = onProductClick,
+        onGoToCatalog = onGoToCatalog,
+        onToggleSelectAll = viewModel::toggleSelectAll,
+        onToggleItemSelection = viewModel::toggleItemSelection,
+        onIncreaseQuantity = viewModel::increaseQuantity,
+        onDecreaseQuantity = viewModel::decreaseQuantity,
+        onRemoveFromCart = viewModel::removeFromCart,
+        onFavoriteToggle = viewModel::toggleFavorite
+    )
+}
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = "ИТОГО",
-                        fontSize = 12.sp
-                    )
-
-                    Text(
-                        text = "${uiState.totalPrice} ₽",
-                        fontSize = 12.sp
-                    )
-                }
-
-                Button(
-                    onClick = { /* checkout */ },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = colorResource(R.color.belle_blue),
-                        contentColor = colorResource(R.color.belle_black)
-                    ),
-                    shape = RoundedCornerShape(3.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = "ВЫБРАТЬ МАГАЗИН",
-                        fontSize = 12.sp
-                    )
-                }
-            }
+@Composable
+fun CartScreenContent(
+    uiState: CartUiState,
+    onProductClick: (Int) -> Unit,
+    onGoToCatalog: () -> Unit,
+    onToggleSelectAll: (Boolean) -> Unit,
+    onToggleItemSelection: (Int, String) -> Unit,
+    onIncreaseQuantity: (Int, String) -> Unit,
+    onDecreaseQuantity: (Int, String) -> Unit,
+    onRemoveFromCart: (Int, String) -> Unit,
+    onFavoriteToggle: (Int) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+        // Header
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "КОРЗИНА",
+                modifier = Modifier.align(Alignment.Center),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Light,
+                letterSpacing = 2.sp
+            )
         }
-    ) { paddingValues ->
+
+        if (uiState.cartItems.isEmpty()) {
+            EmptyCartContent(
+                recommendedProducts = uiState.recommendedProducts,
+                onProductClick = onProductClick,
+                onGoToCatalog = onGoToCatalog,
+                onFavoriteToggle = onFavoriteToggle
+            )
+        } else {
+            FilledCartContent(
+                uiState = uiState,
+                onProductClick = onProductClick,
+                onToggleSelectAll = onToggleSelectAll,
+                onToggleItemSelection = onToggleItemSelection,
+                onIncreaseQuantity = onIncreaseQuantity,
+                onDecreaseQuantity = onDecreaseQuantity,
+                onRemoveFromCart = onRemoveFromCart,
+                onFavoriteToggle = onFavoriteToggle
+            )
+        }
+    }
+}
+
+@Composable
+private fun FilledCartContent(
+    uiState: CartUiState,
+    onProductClick: (Int) -> Unit,
+    onToggleSelectAll: (Boolean) -> Unit,
+    onToggleItemSelection: (Int, String) -> Unit,
+    onIncreaseQuantity: (Int, String) -> Unit,
+    onDecreaseQuantity: (Int, String) -> Unit,
+    onRemoveFromCart: (Int, String) -> Unit,
+    onFavoriteToggle: (Int) -> Unit
+) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        val allSelected = uiState.cartItems.isNotEmpty() && 
+                uiState.selectedItems.size == uiState.cartItems.size
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Checkbox(
+                checked = allSelected,
+                onCheckedChange = onToggleSelectAll,
+                colors = CheckboxDefaults.colors(
+                    checkedColor = colorResource(R.color.belle_black)
+                )
+            )
+            Text(text = "Выбрать все", fontSize = 12.sp)
+        }
 
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.weight(1f),
+            contentPadding = PaddingValues(bottom = 16.dp)
         ) {
-
-            item {
-                HeaderBelleYou()
-
-                HorizontalDivider(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .alpha(0.3f)
-                        .height(0.6.dp),
-                    color = colorResource(R.color.belle_brown)
+            itemsIndexed(uiState.cartItems) { index, item ->
+                ProductCardCart(
+                    item = item,
+                    isSelected = (item.product.id to item.selectedSize) in uiState.selectedItems,
+                    isFavorite = item.product.id in uiState.favorites,
+                    onSelectionChange = { onToggleItemSelection(item.product.id, item.selectedSize) },
+                    onIncrease = { onIncreaseQuantity(item.product.id, item.selectedSize) },
+                    onDecrease = { onDecreaseQuantity(item.product.id, item.selectedSize) },
+                    onDelete = { onRemoveFromCart(item.product.id, item.selectedSize) },
+                    onFavoriteToggle = { onFavoriteToggle(item.product.id) },
+                    onClick = { onProductClick(item.product.id) },
+                    showDivider = index != uiState.cartItems.lastIndex
                 )
             }
 
-            stickyHeader {
-                Surface(
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(
-                                horizontal = 18.dp,
-                                vertical = 12.dp
-                            ),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-
-                        Text(
-                            text = stringResource(
-                                R.string.cart_screen_title
-                            ),
-                            fontSize = 16.sp
-                        )
-
-                        Spacer(modifier = Modifier.width(6.dp))
-
-                        Text(
-                            text = "(${uiState.cartItems.size})",
-                            color = colorResource(
-                                R.color.gray_text
-                            ),
-                            fontSize = 16.sp
-                        )
-                    }
-                }
+            item {
+                Spacer(modifier = Modifier.height(24.dp))
+                OrderSummarySection(uiState)
             }
+        }
 
-            if (uiState.cartItems.isEmpty()) {
-                item {
-                    Box(
-                        modifier = Modifier.fillParentMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Корзина пуста",
-                            fontSize = 14.sp,
-                            color = colorResource(
-                                R.color.gray_text
-                            )
-                        )
-                    }
-                }
-            } else {
-                itemsIndexed(uiState.cartItems) { index, item ->
-
-                    Box(
-                        modifier = Modifier.padding(
-                            horizontal = 16.dp
-                        )
-                    ) {
-                        ProductCardCart(
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            item = item,
-                            showDivider = index != uiState.cartItems.lastIndex,
-                            onClick = {
-                                onProductClick(item.product.id)
-                            },
-                            onIncrease = {
-                                viewModel.increaseQuantity(
-                                    item.product.id,
-                                    item.selectedSize
-                                )
-                            },
-                            onDecrease = {
-                                viewModel.decreaseQuantity(
-                                    item.product.id,
-                                    item.selectedSize
-                                )
-                            },
-                            onDelete = {
-                                viewModel.removeFromCart(
-                                    item.product.id,
-                                    item.selectedSize
-                                )
-                            }
-                        )
-                    }
-                }
-
-                item {
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
+        // Checkout Button
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Button(
+                onClick = { /* Navigate to checkout */ },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = colorResource(R.color.belle_blue).copy(alpha = 0.5f),
+                    contentColor = colorResource(R.color.belle_black)
+                ),
+                shape = RectangleShape,
+                elevation = null
+            ) {
+                Text(text = "ПЕРЕЙТИ К ОФОРМЛЕНИЮ", fontSize = 14.sp, letterSpacing = 1.sp)
             }
         }
     }
+}
+
+@Composable
+private fun OrderSummarySection(uiState: CartUiState) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
+        Text(text = "ВАШ ЗАКАЗ", fontSize = 14.sp, fontWeight = FontWeight.Medium)
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = "Количество", fontSize = 12.sp, color = Color.Gray)
+            Text(text = "${uiState.cartItems.sumOf { it.quantity }} ед.", fontSize = 12.sp)
+        }
+        
+        Spacer(modifier = Modifier.height(8.dp))
+        
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = "сумма заказа", fontSize = 12.sp, color = Color.Gray)
+            val fullSum = uiState.cartItems.sumOf { (it.product.price ?: 0) * it.quantity }
+            Text(text = "$fullSum ₽", fontSize = 12.sp)
+        }
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        HorizontalDivider(thickness = 0.5.dp, color = Color.LightGray)
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = "ИТОГО", fontSize = 14.sp, fontWeight = FontWeight.Medium)
+            Text(text = "${uiState.totalPrice} ₽", fontSize = 14.sp, fontWeight = FontWeight.Medium)
+        }
+    }
+}
+
+@Composable
+private fun EmptyCartContent(
+    recommendedProducts: List<Product>,
+    onProductClick: (Int) -> Unit,
+    onGoToCatalog: () -> Unit,
+    onFavoriteToggle: (Int) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.height(60.dp))
+        
+        Text(
+            text = "ВАША КОРЗИНА ПУСТА",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Normal,
+            textAlign = TextAlign.Center
+        )
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        Text(
+            text = "Добавляйте понравившиеся модели в корзину, чтобы вернуться к ним позже и не искать заново",
+            fontSize = 14.sp,
+            color = Color.Gray,
+            textAlign = TextAlign.Center,
+            lineHeight = 20.sp,
+            modifier = Modifier.padding(horizontal = 40.dp)
+        )
+        
+        Spacer(modifier = Modifier.height(32.dp))
+        
+        Button(
+            onClick = onGoToCatalog,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .height(48.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = colorResource(id = R.color.belle_blue).copy(alpha = 0.5f),
+                contentColor = colorResource(id = R.color.belle_black)
+            ),
+            shape = RectangleShape,
+            elevation = null
+        ) {
+            Text(text = "ПЕРЕЙТИ В КАТАЛОГ", fontSize = 14.sp, letterSpacing = 1.sp)
+        }
+        
+        Spacer(modifier = Modifier.height(60.dp))
+        
+        if (recommendedProducts.isNotEmpty()) {
+            ProductHorizontalRow(
+                title = "Рекомендуем",
+                products = recommendedProducts,
+                favorites = emptySet(), // Mock
+                onProductClick = onProductClick,
+                onFavoriteClick = onFavoriteToggle,
+                onSeeAllClick = onGoToCatalog
+            )
+        }
+        
+        Spacer(modifier = Modifier.height(32.dp))
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CartScreenEmptyPreview() {
+    CartScreenContent(
+        uiState = CartUiState(
+            cartItems = emptyList(),
+            recommendedProducts = listOf(
+                Product(1, "Товар 1", "123", 1000, description = "", category = "", imageUrl = "")
+            )
+        ),
+        onProductClick = {},
+        onGoToCatalog = {},
+        onToggleSelectAll = {},
+        onToggleItemSelection = { _, _ -> },
+        onIncreaseQuantity = { _, _ -> },
+        onDecreaseQuantity = { _, _ -> },
+        onRemoveFromCart = { _, _ -> },
+        onFavoriteToggle = {}
+    )
 }

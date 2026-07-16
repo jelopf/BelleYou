@@ -62,6 +62,7 @@ val appModule = module {
     viewModel {
         CartViewModel(
             get(),
+            get(),
             get()
         )
     }
@@ -69,6 +70,7 @@ val appModule = module {
     viewModel { (productId: Int) ->
         ProductDetailViewModel(
             productId,
+            get(),
             get(),
             get()
         )

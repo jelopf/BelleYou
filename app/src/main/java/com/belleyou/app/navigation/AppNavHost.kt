@@ -3,6 +3,7 @@ package com.belleyou.app.navigation
 import android.net.Uri
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,6 +20,7 @@ import com.belleyou.feature.product.ui.ProductDetailScreen
 import com.belleyou.feature.recommendations.ui.RecommendationsScreen
 import com.belleyou.feature.wishlist.ui.WishlistScreen
 
+@ExperimentalMaterial3Api
 @Composable
 fun AppNavHost(
     navController: NavHostController
@@ -56,6 +58,7 @@ fun AppNavHost(
 
             composable(Routes.Recommendations.route) {
                 RecommendationsScreen(
+                    onBackClick = { navController.popBackStack() },
                     onProductClick = { productId ->
                         navController.navigate(Routes.ProductDetail.createRoute(productId))
                     }
@@ -63,7 +66,16 @@ fun AppNavHost(
             }
 
             composable(Routes.Wishlist.route) {
-                WishlistScreen()
+                WishlistScreen(
+                    onProductClick = { productId ->
+                        navController.navigate(Routes.ProductDetail.createRoute(productId))
+                    },
+                    onGoToCatalog = {
+                        navController.navigate(Routes.Home.route) {
+                            popUpTo(Routes.Home.route) { inclusive = true }
+                        }
+                    }
+                )
             }
 
             composable(Routes.Cart.route) {
@@ -72,6 +84,11 @@ fun AppNavHost(
                         navController.navigate(
                             Routes.ProductDetail.createRoute(productId)
                         )
+                    },
+                    onGoToCatalog = {
+                        navController.navigate(Routes.Home.route) {
+                            popUpTo(Routes.Home.route) { inclusive = true }
+                        }
                     }
                 )
             }
@@ -93,6 +110,11 @@ fun AppNavHost(
                     productId = productId,
                     onBackClick = {
                         navController.popBackStack()
+                    },
+                    onProductClick = { newProductId ->
+                        navController.navigate(
+                            Routes.ProductDetail.createRoute(newProductId)
+                        )
                     }
                 )
             }

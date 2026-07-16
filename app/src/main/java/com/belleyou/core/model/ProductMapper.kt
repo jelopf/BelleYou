@@ -9,7 +9,11 @@ fun ProductDto.toDomain(): Product {
         article = article,
         price = price,
         oldPrice = oldPrice,
-        description = description,
+        rating = rating,
+        reviewsCount = reviewsCount,
+        brand = brand,
+        description = description ?: "",
+        modelParameters = "Параметры модели: 175 см, 80/60/90 см. Размер на модели: XS", // Hardcoded for MVP or mapping from DTO if added
         category = category,
         imageUrl = imageUrl,
         variantImages = variantImages ?: emptyList(),

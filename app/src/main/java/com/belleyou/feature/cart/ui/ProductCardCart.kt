@@ -1,40 +1,44 @@
 package com.belleyou.feature.cart.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
 import com.belleyou.app.R
 import com.belleyou.core.designsystem.components.layout.ProductQuantity
-import com.belleyou.core.designsystem.components.layout.SizeSelector
+import com.belleyou.core.model.Product
 import com.belleyou.feature.cart.domain.CartItem
 
 @Composable
 fun ProductCardCart(
     modifier: Modifier = Modifier,
     item: CartItem,
+    isSelected: Boolean,
+    isFavorite: Boolean,
+    onSelectionChange: (Boolean) -> Unit,
     onIncrease: () -> Unit,
     onDecrease: () -> Unit,
     onDelete: () -> Unit,
+    onFavoriteToggle: () -> Unit,
     onClick: () -> Unit,
     showDivider: Boolean = true
 ) {
@@ -43,132 +47,147 @@ fun ProductCardCart(
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(vertical = 16.dp),
+            verticalAlignment = Alignment.Top
         ) {
-
-            // Изображение
-            Box(
-                modifier = Modifier
-                    .width(80.dp)
-                    .height(120.dp)
-                    .fillMaxHeight()
-                    .background(colorResource(R.color.belle_blue))
-                    .clickable { onClick() }
+            // Selection Checkbox
+            Checkbox(
+                checked = isSelected,
+                onCheckedChange = onSelectionChange,
+                modifier = Modifier.padding(top = 0.dp),
+                colors = CheckboxDefaults.colors(
+                    checkedColor = colorResource(R.color.belle_black),
+                    uncheckedColor = Color.LightGray
+                )
             )
 
-            // Блок с информацией
-            Column(
+            // Product Image
+            Image(
+                painter = rememberAsyncImagePainter(product.imageUrl),
+                contentDescription = null,
                 modifier = Modifier
-                    .weight(1f)
+                    .size(100.dp, 140.dp)
+                    .background(colorResource(R.color.belle_blue))
                     .clickable { onClick() },
-                verticalArrangement = Arrangement.SpaceBetween
-            ) {
+                contentScale = ContentScale.Crop
+            )
 
-                // Название продукта + цена
+            Spacer(modifier = Modifier.width(12.dp))
+
+            // Info Block
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.Top
                 ) {
-
-                    Text(
-                        text = product.name,
-                        fontSize = 12.sp,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f)
-                    )
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    Text(
-                        text = "${product.price * item.quantity} ₽",
-                        fontSize = 12.sp
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = product.name.uppercase(),
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Light,
+                            lineHeight = 16.sp,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text = "арт. ${product.article}",
+                            fontSize = 11.sp,
+                            color = Color.Gray
+                        )
+                        Text(
+                            text = "Цвет: ${product.category}", // Mock color as we don't have it explicitly
+                            fontSize = 11.sp,
+                            color = Color.Gray
+                        )
+                    }
+                    
+                    Icon(
+                        imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(20.dp)
+                            .clickable { onFavoriteToggle() },
+                        tint = if (isFavorite) colorResource(R.color.belle_blue_dark) else Color.LightGray
                     )
                 }
 
-                // Прочее
-                Column {
+                Spacer(modifier = Modifier.height(12.dp))
 
-                    Row {
-                        Text(
-                            text = "арт.",
-                            fontSize = 10.sp,
-                            color = colorResource(R.color.gray_text)
-                        )
-
-                        Spacer(modifier = Modifier.width(2.dp))
-
-                        Text(
-                            text = product.article,
-                            fontSize = 10.sp,
-                            color = colorResource(R.color.gray_text)
-                        )
+                // Size and Quantity Row
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Size Selector (Simple box for now)
+                    Box(
+                        modifier = Modifier
+                            .border(0.5.dp, Color.LightGray)
+                            .padding(horizontal = 12.dp, vertical = 4.dp)
+                            .widthIn(min = 40.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(text = item.selectedSize, fontSize = 12.sp)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Icon(painterResource(R.drawable.ic_arrow_down), null, modifier = Modifier.size(10.dp))
+                        }
                     }
 
-                    Row {
-                        Text(
-                            text = "Цвет:",
-                            fontSize = 10.sp,
-                            color = colorResource(R.color.gray_text)
-                        )
+                    Spacer(modifier = Modifier.width(16.dp))
 
-                        Spacer(modifier = Modifier.width(2.dp))
-
-                        Text(
-                            text = "не указан",
-                            fontSize = 10.sp,
-                            color = colorResource(R.color.gray_text)
+                    // Quantity
+                    Box(modifier = Modifier.border(0.5.dp, Color.LightGray)) {
+                        ProductQuantity(
+                            quantity = item.quantity,
+                            onIncrease = onIncrease,
+                            onDecrease = onDecrease
                         )
                     }
-
-                    Spacer(modifier = Modifier.height(18.dp))
                 }
 
-                // Блоки для управления товарами
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Delete and Price Row
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
-                    SizeSelector(
-                        sizes = item.product.sizes,
-                        selectedSize = item.selectedSize,
-                        expanded = false,
-                        onExpandedChange = {},
-                        onSizeSelected = {},
-                        enabled = false,
-                        modifier = Modifier.width(90.dp)
-                    )
-
-                    ProductQuantity(
-                        quantity = item.quantity,
-                        onIncrease = onIncrease,
-                        onDecrease = onDecrease
-                    )
-
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_cart_delete_item),
-                        contentDescription = "Удалить",
+                    Row(
                         modifier = Modifier.clickable { onDelete() },
-                        tint = colorResource(R.color.belle_brown)
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Delete,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                            tint = colorResource(R.color.belle_black).copy(alpha = 0.5f)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "УДАЛИТЬ",
+                            fontSize = 10.sp,
+                            color = colorResource(R.color.belle_black).copy(alpha = 0.5f)
+                        )
+                    }
+
+                    Text(
+                        text = "${(product.price ?: 0) * item.quantity} ₽",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium
                     )
                 }
             }
         }
 
         if (showDivider) {
-            HorizontalDivider(
-                thickness = 1.2.dp,
-                color = colorResource(R.color.belle_under_header)
-                    .copy(alpha = 0.3f)
-            )
+            HorizontalDivider(thickness = 0.5.dp, color = Color.LightGray.copy(alpha = 0.5f))
         }
     }
 }

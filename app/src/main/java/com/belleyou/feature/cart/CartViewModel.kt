@@ -3,17 +3,20 @@ package com.belleyou.feature.cart
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.belleyou.core.repository.CartRepository
+import com.belleyou.core.repository.FavoritesRepository
 import com.belleyou.core.repository.ProductRepository
 import com.belleyou.feature.cart.domain.CartItem
 import com.belleyou.feature.cart.ui.CartUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class CartViewModel(
     private val cartRepository: CartRepository,
-    private val productRepository: ProductRepository
+    private val productRepository: ProductRepository,
+    private val favoritesRepository: FavoritesRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CartUiState())
@@ -28,8 +31,9 @@ class CartViewModel(
 
             combine(
                 cartRepository.cartFlow,
-                productRepository.getProductsFlow()
-            ) { cartMap, products ->
+                productRepository.getProductsFlow(),
+                favoritesRepository.favoritesFlow
+            ) { cartMap, products, favorites ->
 
                 val cartItems = cartMap.mapNotNull { (key, count) ->
 
@@ -44,17 +48,59 @@ class CartViewModel(
                     }
                 }
 
-                val totalPrice = cartItems.sumOf {
-                    it.product.price * it.quantity
-                }
+                val currentSelectedKeys = cartItems.map { it.product.id to it.selectedSize }.toSet()
+                val validSelectedItems = _uiState.value.selectedItems.intersect(currentSelectedKeys)
 
-                CartUiState(
+                val totalPrice = cartItems
+                    .filter { (it.product.id to it.selectedSize) in validSelectedItems }
+                    .sumOf { (it.product.price ?: 0) * it.quantity }
+
+                _uiState.value.copy(
                     cartItems = cartItems,
-                    totalPrice = totalPrice
+                    selectedItems = validSelectedItems,
+                    totalPrice = totalPrice,
+                    recommendedProducts = products.shuffled().take(6),
+                    favorites = favorites
                 )
             }.collect { state ->
                 _uiState.value = state
             }
+        }
+    }
+
+    fun toggleItemSelection(productId: Int, size: String) {
+        _uiState.update { state ->
+            val key = productId to size
+            val newSelectedItems = if (key in state.selectedItems) {
+                state.selectedItems - key
+            } else {
+                state.selectedItems + key
+            }
+            state.copy(selectedItems = newSelectedItems).calculatePrice()
+        }
+    }
+
+    fun toggleSelectAll(select: Boolean) {
+        _uiState.update { state ->
+            val newSelected = if (select) {
+                state.cartItems.map { it.product.id to it.selectedSize }.toSet()
+            } else {
+                emptySet()
+            }
+            state.copy(selectedItems = newSelected).calculatePrice()
+        }
+    }
+
+    private fun CartUiState.calculatePrice(): CartUiState {
+        val price = cartItems
+            .filter { (it.product.id to it.selectedSize) in selectedItems }
+            .sumOf { (it.product.price ?: 0) * it.quantity }
+        return copy(totalPrice = price)
+    }
+
+    fun toggleFavorite(productId: Int) {
+        viewModelScope.launch {
+            favoritesRepository.toggleFavorite(productId)
         }
     }
 

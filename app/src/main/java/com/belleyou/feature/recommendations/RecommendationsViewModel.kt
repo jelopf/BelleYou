@@ -50,6 +50,10 @@ class RecommendationsViewModel(
         }
     }
 
+    fun dismissOnboarding() {
+        _uiState.update { it.copy(showOnboarding = false) }
+    }
+
     fun nextProduct() {
         _uiState.update { state ->
             if (state.products.isEmpty()) return@update state

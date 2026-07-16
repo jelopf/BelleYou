@@ -2,17 +2,13 @@ package com.belleyou.core.designsystem.components.cards
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,6 +30,7 @@ fun ProductCardContent(
     showFavoriteIcon: Boolean,
     showSizeSelector: Boolean,
     showInCartButton: Boolean,
+    showCartAction: Boolean = false,
 
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
@@ -53,28 +50,37 @@ fun ProductCardContent(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .aspectRatio(1f)
+                .aspectRatio(0.75f)
                 .background(colorResource(R.color.belle_blue))
         ) {
 
             if (showFavoriteIcon) {
-                Icon(
-                    imageVector = Icons.Default.Favorite,
-                    contentDescription = null,
+                Surface(
+                    shape = CircleShape,
+                    color = Color.White.copy(alpha = 0.8f),
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .padding(8.dp)
-                        .size(24.dp)
-                        .clickable { onFavoriteClick() },
-                    tint = if (isFavorite)
-                        Color.Red
-                    else
-                        colorResource(R.color.white)
-                )
+                        .padding(12.dp)
+                        .size(32.dp)
+                        .clickable { onFavoriteClick() }
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp),
+                            tint = if (isFavorite) colorResource(R.color.belle_blue_dark) else Color.Gray
+                        )
+                    }
+                }
             }
         }
 
-        ProductInfoBlock(product)
+        ProductInfoBlock(
+            product = product,
+            showCartAction = showCartAction,
+            onCartClick = onAddToCartClick
+        )
 
         Spacer(Modifier.height(4.dp))
 

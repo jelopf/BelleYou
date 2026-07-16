@@ -16,6 +16,7 @@ fun ProductCard(
     showSizeSelector: Boolean = false,
     showInCartButton: Boolean = false,
     showFavoriteIcon: Boolean = false,
+    showCartAction: Boolean = false,
     onClick: () -> Unit = {},
     onFavoriteClick: () -> Unit = {},
     onAddToCartClick: (String?) -> Unit = {},
@@ -38,6 +39,7 @@ fun ProductCard(
         showFavoriteIcon = showFavoriteIcon,
         showSizeSelector = showSizeSelector,
         showInCartButton = showInCartButton,
+        showCartAction = showCartAction,
 
         expanded = sizeExpanded,
         onExpandedChange = { sizeExpanded = it },

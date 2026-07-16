@@ -21,9 +21,9 @@ class WishlistViewModel(
     private val _uiState = MutableStateFlow(
         WishlistUiState(
             wishlists = listOf(
-                "избранное ❤️",
-                "на пляж 🌴",
-                "на каждый день ☀️"
+                "ИЗБРАННОЕ",
+                "НА ДР",
+                "НА 8 МАРТА"
             )
         )
     )
@@ -48,6 +48,7 @@ class WishlistViewModel(
                     wishlists = _uiState.value.wishlists,
                     selectedWishlistIndex = _uiState.value.selectedWishlistIndex,
                     products = filtered,
+                    recommendedProducts = products.shuffled().take(6),
                     favorites = favorites
                 )
 

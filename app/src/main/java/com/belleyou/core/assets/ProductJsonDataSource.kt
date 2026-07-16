@@ -2,6 +2,7 @@ package com.belleyou.core.assets
 
 import android.content.Context
 import kotlinx.serialization.json.Json
+import android.util.Log
 
 class ProductJsonDataSource(
     private val context: Context
@@ -9,14 +10,51 @@ class ProductJsonDataSource(
 
     private val json = Json {
         ignoreUnknownKeys = true
+        coerceInputValues = true
     }
 
-    fun getProducts(): List<ProductDto> {
-        val jsonString = context.assets
-            .open("products.json")
-            .bufferedReader()
-            .use { it.readText() }
+    private var cachedProducts: List<ProductDto>? = null
 
-        return json.decodeFromString(jsonString)
+    fun getProducts(): List<ProductDto> {
+        cachedProducts?.let { return it }
+
+        val products = mutableListOf<ProductDto>()
+        try {
+            // Список всех файлов в assets
+            val files = context.assets.list("") ?: emptyArray()
+            
+            // Фильтруем только .json файлы (исключая системные, если есть)
+            val jsonFiles = files.filter { it.endsWith(".json") && it != "webkit" }
+
+            jsonFiles.forEach { fileName ->
+                try {
+                    val jsonString = context.assets
+                        .open(fileName)
+                        .bufferedReader()
+                        .use { it.readText() }
+                    
+                    val items = json.decodeFromString<List<ProductDto>>(jsonString)
+                    
+                    // Добавляем префикс к ID, чтобы избежать дубликатов между файлами
+                    // Используем имя файла как префикс категории
+                    val categoryPrefix = fileName.removeSuffix(".json")
+                    val uniqueItems = items.map { item ->
+                        // Мы не можем легко поменять Int id в DTO на String без изменения всей цепочки,
+                        // поэтому полагаемся на уникальность 'article' или гарантируем уникальность Int id в файлах.
+                        // Если IDs пересекаются, лучше использовать article как ключ в приложении.
+                        item.copy(category = item.category.ifEmpty { categoryPrefix })
+                    }
+                    
+                    products.addAll(uniqueItems)
+                    Log.d("ProductDataSource", "Loaded ${items.size} products from $fileName")
+                } catch (e: Exception) {
+                    Log.e("ProductDataSource", "Error loading $fileName", e)
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("ProductDataSource", "Error listing assets", e)
+        }
+
+        return products.also { cachedProducts = it }
     }
 }
