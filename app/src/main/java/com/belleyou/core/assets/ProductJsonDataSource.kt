@@ -22,7 +22,7 @@ class ProductJsonDataSource(
         try {
             // Список всех файлов в assets
             val files = context.assets.list("") ?: emptyArray()
-            
+
             // Фильтруем только .json файлы (исключая системные, если есть)
             val jsonFiles = files.filter { it.endsWith(".json") && it != "webkit" }
 

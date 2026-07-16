@@ -8,16 +8,22 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.belleyou.app.R
 import com.belleyou.core.designsystem.components.cards.ProductCard
 import com.belleyou.core.designsystem.components.layout.HeaderBelleYouWithBack
 import com.belleyou.core.model.Product
@@ -37,13 +43,24 @@ fun CategoryScreen(
         viewModel.load(categoryName)
     }
 
-    CategoryScreenContent(
-        categoryName = categoryName,
-        uiState = uiState,
-        onBackClick = onBackClick,
-        onProductClick = onProductClick,
-        onFavoriteClick = { productId -> viewModel.toggleFavorite(productId) }
-    )
+    Box(modifier = Modifier.fillMaxSize()) {
+        CategoryScreenContent(
+            categoryName = categoryName,
+            uiState = uiState,
+            onBackClick = onBackClick,
+            onProductClick = onProductClick,
+            onFavoriteClick = { productId -> viewModel.toggleFavorite(productId) },
+            onSortClick = { viewModel.toggleSortOverlay(true) }
+        )
+
+        if (uiState.isSortOverlayVisible) {
+            SortOverlay(
+                currentOption = uiState.selectedSortOption,
+                onOptionSelected = viewModel::setSortOption,
+                onClose = { viewModel.toggleSortOverlay(false) }
+            )
+        }
+    }
 }
 
 @Composable
@@ -52,7 +69,8 @@ fun CategoryScreenContent(
     uiState: CategoryUiState,
     onBackClick: () -> Unit,
     onProductClick: (Int) -> Unit,
-    onFavoriteClick: (Int) -> Unit
+    onFavoriteClick: (Int) -> Unit,
+    onSortClick: () -> Unit
 ) {
     val products = uiState.products
 
@@ -75,7 +93,7 @@ fun CategoryScreenContent(
                 Icon(
                     imageVector = Icons.Default.Menu,
                     contentDescription = "Sort",
-                    modifier = Modifier.size(20.dp).clickable { /* Sort action */ },
+                    modifier = Modifier.size(20.dp).clickable { onSortClick() },
                     tint = Color.Black
                 )
             }
@@ -113,6 +131,77 @@ fun CategoryScreenContent(
     }
 }
 
+@Composable
+fun SortOverlay(
+    currentOption: SortOption,
+    onOptionSelected: (SortOption) -> Unit,
+    onClose: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "СОРТИРОВКА",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Light,
+                    letterSpacing = 2.sp
+                )
+                IconButton(onClick = onClose) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Close",
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            SortOptionItem("Без сортировки", currentOption == SortOption.NONE) { onOptionSelected(SortOption.NONE) }
+            SortOptionItem("По новизне", currentOption == SortOption.NEWEST) { onOptionSelected(SortOption.NEWEST) }
+            SortOptionItem("По возрастанию", currentOption == SortOption.PRICE_ASC) { onOptionSelected(SortOption.PRICE_ASC) }
+            SortOptionItem("По убыванию", currentOption == SortOption.PRICE_DESC) { onOptionSelected(SortOption.PRICE_DESC) }
+        }
+    }
+}
+
+@Composable
+fun SortOptionItem(
+    title: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RadioButton(
+            selected = isSelected,
+            onClick = null, // Handled by row click
+            colors = RadioButtonDefaults.colors(
+                selectedColor = colorResource(R.color.belle_blue_dark)
+            )
+        )
+        Spacer(modifier = Modifier.width(12.dp))
+        Text(text = title, fontSize = 14.sp)
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun CategoryScreenPreview() {
@@ -142,6 +231,7 @@ fun CategoryScreenPreview() {
         ),
         onBackClick = {},
         onProductClick = {},
-        onFavoriteClick = {}
+        onFavoriteClick = {},
+        onSortClick = {}
     )
 }

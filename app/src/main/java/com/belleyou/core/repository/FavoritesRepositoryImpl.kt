@@ -26,10 +26,7 @@ class FavoritesRepositoryImpl(
 
     override suspend fun toggleFavorite(productId: Int) {
         context.dataStore.edit { prefs ->
-            val current = prefs[FAVORITES_KEY]
-                ?.toMutableSet()
-                ?: mutableSetOf()
-
+            val current = prefs[FAVORITES_KEY]?.toMutableSet() ?: mutableSetOf()
             val id = productId.toString()
 
             if (current.contains(id)) {
