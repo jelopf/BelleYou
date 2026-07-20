@@ -1,5 +1,6 @@
 package com.belleyou.core.designsystem.components.cards
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -7,17 +8,23 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import androidx.compose.ui.platform.LocalContext
 import com.belleyou.app.R
 import com.belleyou.core.designsystem.components.buttons.InCartButton
 import com.belleyou.core.designsystem.components.layout.SizeSelector
+import com.belleyou.core.designsystem.components.layout.ShimmerPlaceholder
 import com.belleyou.core.model.Product
 
 @Composable
@@ -53,6 +60,19 @@ fun ProductCardContent(
                 .aspectRatio(0.75f)
                 .background(colorResource(R.color.belle_blue))
         ) {
+            // Underlay Shimmer
+            ShimmerPlaceholder(modifier = Modifier.fillMaxSize())
+
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(product.imageUrl)
+                    .crossfade(true)
+                    .crossfade(500) // 500ms fade
+                    .build(),
+                contentDescription = product.name,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
 
             if (showFavoriteIcon) {
                 Surface(

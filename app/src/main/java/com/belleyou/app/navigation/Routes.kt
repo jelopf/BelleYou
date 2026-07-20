@@ -16,7 +16,7 @@ sealed class Routes(val route: String) {
 
         const val ARG_ID = "id"
 
-        fun createRoute(id: Int): String {
+        fun createRoute(id: String): String {
             return "product_detail/$id"
         }
     }

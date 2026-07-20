@@ -15,11 +15,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import androidx.compose.ui.platform.LocalContext
+
 @Composable
 fun MainPromoBanner(
     title: String,
     subtitle: String,
-    painter: Painter? = null,
+    imageUrl: Any? = null,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -28,14 +32,15 @@ fun MainPromoBanner(
             .height(500.dp)
             .background(Color.LightGray)
     ) {
-        painter?.let {
-            Image(
-                painter = it,
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-        }
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(imageUrl)
+                .crossfade(true)
+                .build(),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
         
         Column(
             modifier = Modifier

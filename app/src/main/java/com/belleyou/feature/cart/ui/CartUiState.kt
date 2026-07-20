@@ -5,8 +5,8 @@ import com.belleyou.feature.cart.domain.CartItem
 
 data class CartUiState(
     val cartItems: List<CartItem> = emptyList(),
-    val selectedItems: Set<Pair<Int, String>> = emptySet(),
+    val selectedItems: Set<Pair<String, String>> = emptySet(),
     val totalPrice: Int = 0,
     val recommendedProducts: List<Product> = emptyList(),
-    val favorites: Set<Int> = emptySet()
+    val favorites: Set<String> = emptySet()
 )

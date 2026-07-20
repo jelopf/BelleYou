@@ -67,7 +67,7 @@ val appModule = module {
         )
     }
 
-    viewModel { (productId: Int) ->
+    viewModel { (productId: String) ->
         ProductDetailViewModel(
             productId,
             get(),

@@ -1,7 +1,6 @@
 package com.belleyou.feature.product.ui
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -22,18 +21,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.belleyou.app.R
 import com.belleyou.core.designsystem.components.layout.HeaderBelleYouWithBack
 import com.belleyou.core.designsystem.components.layout.ProductHorizontalRow
+import com.belleyou.core.designsystem.components.layout.ShimmerPlaceholder
 import com.belleyou.core.model.Product
 import com.belleyou.feature.product.ProductDetailViewModel
 import com.google.accompanist.pager.HorizontalPager
@@ -44,9 +45,9 @@ import org.koin.core.parameter.parametersOf
 
 @Composable
 fun ProductDetailScreen(
-    productId: Int,
+    productId: String,
     onBackClick: () -> Unit,
-    onProductClick: (Int) -> Unit,
+    onProductClick: (String) -> Unit,
     viewModel: ProductDetailViewModel = koinViewModel { parametersOf(productId) }
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -67,7 +68,7 @@ fun ProductDetailScreen(
 fun ProductDetailContent(
     uiState: ProductDetailUiState,
     onBackClick: () -> Unit,
-    onProductClick: (Int) -> Unit,
+    onProductClick: (String) -> Unit,
     onSelectSize: (String) -> Unit,
     onToggleDescription: () -> Unit,
     onCloseDescription: () -> Unit,
@@ -80,7 +81,7 @@ fun ProductDetailContent(
                 CircularProgressIndicator(Modifier.align(Alignment.Center))
             }
             uiState.error != null -> {
-                Text(text = uiState.error, modifier = Modifier.align(Alignment.Center))
+                ErrorState(message = uiState.error, onRetry = { /* Re-load logic could be here */ })
             }
             uiState.product != null -> {
                 ProductDetailSuccess(
@@ -106,11 +107,26 @@ fun ProductDetailContent(
 }
 
 @Composable
+private fun ErrorState(message: String, onRetry: () -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = message, color = Color.Gray, fontSize = 16.sp)
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(onClick = onRetry, shape = RectangleShape) {
+            Text(text = "ПОПРОБОВАТЬ СНОВА")
+        }
+    }
+}
+
+@Composable
 fun ProductDetailSuccess(
     product: Product,
     uiState: ProductDetailUiState,
     onBackClick: () -> Unit,
-    onProductClick: (Int) -> Unit,
+    onProductClick: (String) -> Unit,
     onSelectSize: (String) -> Unit,
     onToggleDescription: () -> Unit,
     onAddToCart: () -> Unit,
@@ -139,12 +155,18 @@ fun ProductDetailSuccess(
                     state = pagerState,
                     modifier = Modifier.fillMaxSize()
                 ) { page ->
-                    Image(
-                        painter = rememberAsyncImagePainter(images[page]),
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        ShimmerPlaceholder(modifier = Modifier.fillMaxSize())
+                        AsyncImage(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(images[page])
+                                .crossfade(true)
+                                .build(),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
                 }
                 
                 // Favorite Button on Image
@@ -203,12 +225,18 @@ fun ProductDetailSuccess(
                 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     images.take(2).forEach { imageUrl ->
-                        Image(
-                            painter = rememberAsyncImagePainter(imageUrl),
-                            contentDescription = null,
-                            modifier = Modifier.size(60.dp, 80.dp).border(0.5.dp, Color.LightGray),
-                            contentScale = ContentScale.Crop
-                        )
+                        Box(modifier = Modifier.size(60.dp, 80.dp).border(0.5.dp, Color.LightGray)) {
+                            ShimmerPlaceholder(modifier = Modifier.fillMaxSize())
+                            AsyncImage(
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(imageUrl)
+                                    .crossfade(true)
+                                    .build(),
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
                     }
                 }
 
@@ -452,7 +480,7 @@ fun ProductDetailPreview() {
     ProductDetailContent(
         uiState = ProductDetailUiState(
             product = Product(
-                id = 1,
+                id = "1",
                 name = "Бюстгальтер итальянское кружево / femme fatale",
                 article = "BY01-12345",
                 price = 4999,

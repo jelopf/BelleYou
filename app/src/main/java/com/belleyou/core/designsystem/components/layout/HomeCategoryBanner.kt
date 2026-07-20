@@ -15,10 +15,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import androidx.compose.ui.platform.LocalContext
+
 @Composable
 fun HomeCategoryBanner(
     title: String,
-    painter: Painter? = null,
+    imageUrl: Any? = null,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -29,14 +33,15 @@ fun HomeCategoryBanner(
             .background(Color.LightGray)
             .clickable { onClick() }
     ) {
-        painter?.let {
-            Image(
-                painter = it,
-                contentDescription = title,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-        }
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(imageUrl)
+                .crossfade(true)
+                .build(),
+            contentDescription = title,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
         
         // Overlay with text
         Column(

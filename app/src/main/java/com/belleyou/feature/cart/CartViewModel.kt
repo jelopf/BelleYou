@@ -68,7 +68,7 @@ class CartViewModel(
         }
     }
 
-    fun toggleItemSelection(productId: Int, size: String) {
+    fun toggleItemSelection(productId: String, size: String) {
         _uiState.update { state ->
             val key = productId to size
             val newSelectedItems = if (key in state.selectedItems) {
@@ -98,25 +98,25 @@ class CartViewModel(
         return copy(totalPrice = price)
     }
 
-    fun toggleFavorite(productId: Int) {
+    fun toggleFavorite(productId: String) {
         viewModelScope.launch {
             favoritesRepository.toggleFavorite(productId)
         }
     }
 
-    fun increaseQuantity(productId: Int, size: String) {
+    fun increaseQuantity(productId: String, size: String) {
         viewModelScope.launch {
             cartRepository.add(productId, size)
         }
     }
 
-    fun decreaseQuantity(productId: Int, size: String) {
+    fun decreaseQuantity(productId: String, size: String) {
         viewModelScope.launch {
             cartRepository.remove(productId, size)
         }
     }
 
-    fun removeFromCart(productId: Int, size: String) {
+    fun removeFromCart(productId: String, size: String) {
         viewModelScope.launch {
             cartRepository.removeAll(productId, size)
         }

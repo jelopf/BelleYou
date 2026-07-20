@@ -39,10 +39,7 @@ class ProductJsonDataSource(
                     // Используем имя файла как префикс категории
                     val categoryPrefix = fileName.removeSuffix(".json")
                     val uniqueItems = items.map { item ->
-                        // Мы не можем легко поменять Int id в DTO на String без изменения всей цепочки,
-                        // поэтому полагаемся на уникальность 'article' или гарантируем уникальность Int id в файлах.
-                        // Если IDs пересекаются, лучше использовать article как ключ в приложении.
-                        item.copy(category = item.category.ifEmpty { categoryPrefix })
+                        item.copy(category = categoryPrefix)
                     }
                     
                     products.addAll(uniqueItems)

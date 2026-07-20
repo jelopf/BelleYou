@@ -97,13 +97,13 @@ fun AppNavHost(
                 route = Routes.ProductDetail.route,
                 arguments = listOf(
                     navArgument(Routes.ProductDetail.ARG_ID) {
-                        type = NavType.IntType
+                        type = NavType.StringType
                     }
                 )
             ) { backStackEntry ->
 
                 val productId = backStackEntry.arguments
-                        ?.getInt(Routes.ProductDetail.ARG_ID)
+                        ?.getString(Routes.ProductDetail.ARG_ID)
                         ?: return@composable
 
                 ProductDetailScreen(

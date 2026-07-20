@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -18,14 +19,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.belleyou.app.R
 import com.belleyou.core.designsystem.components.cards.ProductCard
 import com.belleyou.core.designsystem.components.layout.HeaderBelleYouWithBack
+import com.belleyou.core.designsystem.components.layout.ShimmerPlaceholder
 import com.belleyou.core.model.Product
 import com.belleyou.feature.category.CategoryViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -34,7 +38,7 @@ import org.koin.androidx.compose.koinViewModel
 fun CategoryScreen(
     categoryName: String,
     onBackClick: () -> Unit,
-    onProductClick: (Int) -> Unit,
+    onProductClick: (String) -> Unit,
     viewModel: CategoryViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -50,7 +54,8 @@ fun CategoryScreen(
             onBackClick = onBackClick,
             onProductClick = onProductClick,
             onFavoriteClick = { productId -> viewModel.toggleFavorite(productId) },
-            onSortClick = { viewModel.toggleSortOverlay(true) }
+            onSortClick = { viewModel.toggleSortOverlay(true) },
+            onRetry = { viewModel.load(categoryName) }
         )
 
         if (uiState.isSortOverlayVisible) {
@@ -68,12 +73,11 @@ fun CategoryScreenContent(
     categoryName: String,
     uiState: CategoryUiState,
     onBackClick: () -> Unit,
-    onProductClick: (Int) -> Unit,
-    onFavoriteClick: (Int) -> Unit,
-    onSortClick: () -> Unit
+    onProductClick: (String) -> Unit,
+    onFavoriteClick: (String) -> Unit,
+    onSortClick: () -> Unit,
+    onRetry: () -> Unit
 ) {
-    val products = uiState.products
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -99,34 +103,94 @@ fun CategoryScreenContent(
             }
         )
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            contentPadding = PaddingValues(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp),
-            modifier = Modifier.fillMaxSize()
-        ) {
-            itemsIndexed(
-                items = products,
-                span = { index, _ ->
-                    val isFullWidth = (index + 1) % 5 == 0
-                    GridItemSpan(if (isFullWidth) 2 else 1)
-                }
-            ) { _, product ->
-                ProductCard(
-                    product = product,
-                    isFavorite = uiState.favorites.contains(product.id),
-                    showFavoriteIcon = true,
-                    showCartAction = true,
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        onProductClick(product.id)
-                    },
-                    onFavoriteClick = {
-                        onFavoriteClick(product.id)
-                    }
+        when {
+            uiState.isLoading -> {
+                CategoryLoadingState()
+            }
+            uiState.error != null -> {
+                CategoryErrorState(uiState.error, onRetry)
+            }
+            else -> {
+                CategoryGrid(
+                    products = uiState.products,
+                    favorites = uiState.favorites,
+                    onProductClick = onProductClick,
+                    onFavoriteClick = onFavoriteClick
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun CategoryLoadingState() {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        contentPadding = PaddingValues(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
+        items(6) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                ShimmerPlaceholder(modifier = Modifier.aspectRatio(0.75f).fillMaxWidth())
+                ShimmerPlaceholder(modifier = Modifier.height(14.dp).fillMaxWidth(0.7f))
+                ShimmerPlaceholder(modifier = Modifier.height(12.dp).fillMaxWidth(0.4f))
+            }
+        }
+    }
+}
+
+@Composable
+private fun CategoryErrorState(message: String, onRetry: () -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxSize().padding(32.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(imageVector = Icons.Default.Warning, contentDescription = null, modifier = Modifier.size(48.dp), tint = Color.Gray)
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(text = message, textAlign = TextAlign.Center, color = Color.Gray, fontSize = 14.sp)
+        Spacer(modifier = Modifier.height(24.dp))
+        Button(onClick = onRetry, shape = RectangleShape) {
+            Text(text = "ПОПРОБОВАТЬ СНОВА")
+        }
+    }
+}
+
+@Composable
+private fun CategoryGrid(
+    products: List<Product>,
+    favorites: Set<String>,
+    onProductClick: (String) -> Unit,
+    onFavoriteClick: (String) -> Unit
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        contentPadding = PaddingValues(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp),
+        modifier = Modifier.fillMaxSize()
+    ) {
+        itemsIndexed(
+            items = products,
+            span = { index, _ ->
+                val isFullWidth = (index + 1) % 5 == 0
+                GridItemSpan(if (isFullWidth) 2 else 1)
+            }
+        ) { _, product ->
+            ProductCard(
+                product = product,
+                isFavorite = favorites.contains(product.id),
+                showFavoriteIcon = true,
+                showCartAction = true,
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+                    onProductClick(product.id)
+                },
+                onFavoriteClick = {
+                    onFavoriteClick(product.id)
+                }
+            )
         }
     }
 }
@@ -192,7 +256,7 @@ fun SortOptionItem(
     ) {
         RadioButton(
             selected = isSelected,
-            onClick = null, // Handled by row click
+            onClick = null,
             colors = RadioButtonDefaults.colors(
                 selectedColor = colorResource(R.color.belle_blue_dark)
             )
@@ -210,28 +274,21 @@ fun CategoryScreenPreview() {
         uiState = CategoryUiState(
             products = listOf(
                 Product(
-                    id = 1,
+                    id = "1",
                     name = "Майка из хлопка",
                     article = "BY01",
                     price = 3999,
                     description = "",
                     category = "Новинки",
                     imageUrl = ""
-                ),
-                Product(
-                    id = 2,
-                    name = "Блуза из батиста",
-                    article = "BY02",
-                    price = 11999,
-                    description = "",
-                    category = "Новинки",
-                    imageUrl = ""
                 )
-            )
+            ),
+            isLoading = false
         ),
         onBackClick = {},
         onProductClick = {},
         onFavoriteClick = {},
-        onSortClick = {}
+        onSortClick = {},
+        onRetry = {}
     )
 }

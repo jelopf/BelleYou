@@ -64,13 +64,13 @@ class WishlistViewModel(
         }
     }
 
-    fun toggleFavorite(productId: Int) {
+    fun toggleFavorite(productId: String) {
         viewModelScope.launch {
             favoritesRepository.toggleFavorite(productId)
         }
     }
 
-    fun addToCart(productId: Int) {
+    fun addToCart(productId: String) {
         val product = _uiState.value.products.find { it.id == productId } ?: return
 
         viewModelScope.launch {

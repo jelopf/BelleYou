@@ -7,9 +7,9 @@ interface CartRepository {
 
     val cartFlow: Flow<Map<CartKey, Int>>
 
-    suspend fun add(productId: Int, selectedSize: String)
+    suspend fun add(productId: String, selectedSize: String)
 
-    suspend fun remove(productId: Int, selectedSize: String)
+    suspend fun remove(productId: String, selectedSize: String)
 
-    suspend fun removeAll(productId: Int, selectedSize: String)
+    suspend fun removeAll(productId: String, selectedSize: String)
 }

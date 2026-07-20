@@ -7,5 +7,5 @@ data class WishlistUiState(
     val selectedWishlistIndex: Int = 0,
     val products: List<Product> = emptyList(),
     val recommendedProducts: List<Product> = emptyList(),
-    val favorites: Set<Int> = emptySet()
+    val favorites: Set<String> = emptySet()
 )

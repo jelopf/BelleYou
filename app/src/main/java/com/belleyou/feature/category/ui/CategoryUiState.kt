@@ -4,7 +4,9 @@ import com.belleyou.core.model.Product
 
 data class CategoryUiState(
     val products: List<Product> = emptyList(),
-    val favorites: Set<Int> = emptySet(),
+    val favorites: Set<String> = emptySet(),
+    val isLoading: Boolean = true,
+    val error: String? = null,
     val isSortOverlayVisible: Boolean = false,
     val selectedSortOption: SortOption = SortOption.NONE
 )

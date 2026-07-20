@@ -14,6 +14,7 @@ data class ProductDto(
     val brand: String? = null,
     val imageUrl: String,
     val description: String? = null,
+    val modelParameters: String? = null,
     val variantImages: List<String>? = null,
     val sizes: List<String>? = null,
     val category: String

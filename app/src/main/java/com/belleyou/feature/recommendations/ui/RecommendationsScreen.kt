@@ -34,7 +34,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import androidx.compose.ui.platform.LocalContext
 import com.belleyou.app.R
 import com.belleyou.core.designsystem.components.layout.HeaderBelleYouWithBack
 import com.belleyou.core.model.Product
@@ -46,7 +48,7 @@ import org.koin.core.parameter.parametersOf
 fun RecommendationsScreen(
     viewModel: RecommendationsViewModel = koinViewModel(),
     onBackClick: () -> Unit = {},
-    onProductClick: (Int) -> Unit
+    onProductClick: (String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -65,7 +67,7 @@ fun RecommendationsScreen(
 fun RecommendationsContent(
     uiState: RecommendationsUiState,
     onBackClick: () -> Unit,
-    onProductClick: (Int) -> Unit,
+    onProductClick: (String) -> Unit,
     onSkip: () -> Unit,
     onFavorite: () -> Unit,
     onAddToCart: () -> Unit,
@@ -134,8 +136,11 @@ fun SelectionCard(
             .clip(RoundedCornerShape(24.dp))
     ) {
         // Main Image
-        Image(
-            painter = rememberAsyncImagePainter(product.imageUrl),
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(product.imageUrl)
+                .crossfade(true)
+                .build(),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
@@ -384,7 +389,7 @@ fun RecommendationsPreview() {
     RecommendationsContent(
         uiState = RecommendationsUiState(
             products = listOf(
-                Product(1, "Топ геометрия формы", "W2100002", 7999, description = "", category = "Белый", imageUrl = "")
+                Product("1", "Топ геометрия формы", "W2100002", 7999, description = "", category = "Белый", imageUrl = "")
             ),
             showOnboarding = false
         ),
@@ -403,7 +408,7 @@ fun RecommendationsOnboardingPreview() {
     RecommendationsContent(
         uiState = RecommendationsUiState(
             products = listOf(
-                Product(1, "Топ геометрия формы", "W2100002", 7999, description = "", category = "Белый", imageUrl = "")
+                Product("1", "Топ геометрия формы", "W2100002", 7999, description = "", category = "Белый", imageUrl = "")
             ),
             showOnboarding = true
         ),

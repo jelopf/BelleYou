@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ProductDetailViewModel(
-    private val productId: Int,
+    private val productId: String,
     private val productRepository: ProductRepository,
     private val cartRepository: CartRepository,
     private val favoritesRepository: FavoritesRepository
@@ -38,10 +38,23 @@ class ProductDetailViewModel(
     private fun loadProduct() {
         viewModelScope.launch {
 
-            val allProducts = productRepository
-                .getProductsFlow()
-                .first()
+            val allProductsResult = try {
+                Result.success(productRepository.getProductsFlow().first())
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
 
+            if (allProductsResult.isFailure) {
+                _uiState.update { 
+                    it.copy(
+                        isLoading = false,
+                        error = "Ошибка загрузки данных"
+                    )
+                }
+                return@launch
+            }
+
+            val allProducts = allProductsResult.getOrThrow()
             val product = allProducts.find { it.id == productId }
 
             if (product != null) {
@@ -63,7 +76,7 @@ class ProductDetailViewModel(
                 _uiState.update { 
                     it.copy(
                         isLoading = false,
-                        error = "Product not found"
+                        error = "Товар не найден"
                     )
                 }
             }

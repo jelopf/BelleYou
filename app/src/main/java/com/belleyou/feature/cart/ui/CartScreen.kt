@@ -1,7 +1,6 @@
 package com.belleyou.feature.cart.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -32,7 +31,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun CartScreen(
     viewModel: CartViewModel = koinViewModel(),
-    onProductClick: (Int) -> Unit = {},
+    onProductClick: (String) -> Unit = {},
     onGoToCatalog: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -53,14 +52,14 @@ fun CartScreen(
 @Composable
 fun CartScreenContent(
     uiState: CartUiState,
-    onProductClick: (Int) -> Unit,
+    onProductClick: (String) -> Unit,
     onGoToCatalog: () -> Unit,
     onToggleSelectAll: (Boolean) -> Unit,
-    onToggleItemSelection: (Int, String) -> Unit,
-    onIncreaseQuantity: (Int, String) -> Unit,
-    onDecreaseQuantity: (Int, String) -> Unit,
-    onRemoveFromCart: (Int, String) -> Unit,
-    onFavoriteToggle: (Int) -> Unit
+    onToggleItemSelection: (String, String) -> Unit,
+    onIncreaseQuantity: (String, String) -> Unit,
+    onDecreaseQuantity: (String, String) -> Unit,
+    onRemoveFromCart: (String, String) -> Unit,
+    onFavoriteToggle: (String) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -107,13 +106,13 @@ fun CartScreenContent(
 @Composable
 private fun FilledCartContent(
     uiState: CartUiState,
-    onProductClick: (Int) -> Unit,
+    onProductClick: (String) -> Unit,
     onToggleSelectAll: (Boolean) -> Unit,
-    onToggleItemSelection: (Int, String) -> Unit,
-    onIncreaseQuantity: (Int, String) -> Unit,
-    onDecreaseQuantity: (Int, String) -> Unit,
-    onRemoveFromCart: (Int, String) -> Unit,
-    onFavoriteToggle: (Int) -> Unit
+    onToggleItemSelection: (String, String) -> Unit,
+    onIncreaseQuantity: (String, String) -> Unit,
+    onDecreaseQuantity: (String, String) -> Unit,
+    onRemoveFromCart: (String, String) -> Unit,
+    onFavoriteToggle: (String) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         val allSelected = uiState.cartItems.isNotEmpty() && 
@@ -230,9 +229,9 @@ private fun OrderSummarySection(uiState: CartUiState) {
 @Composable
 private fun EmptyCartContent(
     recommendedProducts: List<Product>,
-    onProductClick: (Int) -> Unit,
+    onProductClick: (String) -> Unit,
     onGoToCatalog: () -> Unit,
-    onFavoriteToggle: (Int) -> Unit
+    onFavoriteToggle: (String) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -284,7 +283,7 @@ private fun EmptyCartContent(
             ProductHorizontalRow(
                 title = "Рекомендуем",
                 products = recommendedProducts,
-                favorites = emptySet(), // Mock
+                favorites = emptySet(),
                 onProductClick = onProductClick,
                 onFavoriteClick = onFavoriteToggle,
                 onSeeAllClick = onGoToCatalog
@@ -302,7 +301,7 @@ fun CartScreenEmptyPreview() {
         uiState = CartUiState(
             cartItems = emptyList(),
             recommendedProducts = listOf(
-                Product(1, "Товар 1", "123", 1000, description = "", category = "", imageUrl = "")
+                Product("1", "Товар 1", "123", 1000, description = "", category = "", imageUrl = "")
             )
         ),
         onProductClick = {},

@@ -27,8 +27,8 @@ class CartRepositoryImpl(
             json.keys().forEach { key ->
                 val parts = key.split(":")
 
-                val productId = parts.getOrNull(0)?.toIntOrNull() ?: return@forEach
-                val size = parts.getOrNull(1) ?: "" // защита от старых данных
+                val productId = parts.getOrNull(0) ?: return@forEach
+                val size = parts.getOrNull(1) ?: ""
 
                 result[CartKey(productId, size)] = json.getInt(key)
             }
@@ -36,7 +36,7 @@ class CartRepositoryImpl(
             result
         }
 
-    override suspend fun add(productId: Int, selectedSize: String) {
+    override suspend fun add(productId: String, selectedSize: String) {
         context.cartDataStore.edit { prefs ->
             val current = prefs[CART_KEY]?.let {
                 JSONObject(it)
@@ -51,7 +51,7 @@ class CartRepositoryImpl(
         }
     }
 
-    override suspend fun remove(productId: Int, selectedSize: String) {
+    override suspend fun remove(productId: String, selectedSize: String) {
         context.cartDataStore.edit { prefs ->
             val current = prefs[CART_KEY]?.let {
                 JSONObject(it)
@@ -70,7 +70,7 @@ class CartRepositoryImpl(
         }
     }
 
-    override suspend fun removeAll(productId: Int, selectedSize: String) {
+    override suspend fun removeAll(productId: String, selectedSize: String) {
         context.cartDataStore.edit { prefs ->
             val current = prefs[CART_KEY]?.let {
                 JSONObject(it)

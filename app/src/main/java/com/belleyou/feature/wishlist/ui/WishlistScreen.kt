@@ -3,6 +3,7 @@ package com.belleyou.feature.wishlist.ui
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -18,6 +19,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,6 +27,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.belleyou.app.R
@@ -32,13 +35,12 @@ import com.belleyou.core.designsystem.components.cards.ProductCard
 import com.belleyou.core.designsystem.components.layout.ProductHorizontalRow
 import com.belleyou.core.model.Product
 import com.belleyou.feature.wishlist.WishlistViewModel
-import androidx.compose.ui.tooling.preview.Preview
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun WishlistScreen(
     viewModel: WishlistViewModel = koinViewModel(),
-    onProductClick: (Int) -> Unit = {},
+    onProductClick: (String) -> Unit = {},
     onGoToCatalog: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -56,9 +58,9 @@ fun WishlistScreen(
 @Composable
 fun WishlistScreenContent(
     uiState: WishlistUiState,
-    onProductClick: (Int) -> Unit,
-    onFavoriteToggle: (Int) -> Unit,
-    onAddToCart: (Int) -> Unit,
+    onProductClick: (String) -> Unit,
+    onFavoriteToggle: (String) -> Unit,
+    onAddToCart: (String) -> Unit,
     onSelectWishlist: (Int) -> Unit,
     onGoToCatalog: () -> Unit
 ) {
@@ -114,9 +116,9 @@ fun WishlistScreenContent(
 @Composable
 private fun FilledWishlistContent(
     uiState: WishlistUiState,
-    onProductClick: (Int) -> Unit,
-    onFavoriteToggle: (Int) -> Unit,
-    onAddToCart: (Int) -> Unit,
+    onProductClick: (String) -> Unit,
+    onFavoriteToggle: (String) -> Unit,
+    onAddToCart: (String) -> Unit,
     onSelectWishlist: (Int) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -198,9 +200,9 @@ private fun FilledWishlistContent(
 @Composable
 private fun EmptyWishlistContent(
     recommendedProducts: List<Product>,
-    favorites: Set<Int>,
-    onProductClick: (Int) -> Unit,
-    onFavoriteToggle: (Int) -> Unit,
+    favorites: Set<String>,
+    onProductClick: (String) -> Unit,
+    onFavoriteToggle: (String) -> Unit,
     onGoToCatalog: () -> Unit
 ) {
     Column(
@@ -272,7 +274,7 @@ fun WishlistScreenEmptyPreview() {
         uiState = WishlistUiState(
             products = emptyList(),
             recommendedProducts = listOf(
-                Product(1, "Товар 1", "123", 1000, description = "", category = "", imageUrl = "")
+                Product("1", "Товар 1", "123", 1000, description = "", category = "", imageUrl = "")
             )
         ),
         onProductClick = {},
@@ -290,8 +292,8 @@ fun WishlistScreenFilledPreview() {
         uiState = WishlistUiState(
             wishlists = listOf("ИЗБРАННОЕ", "НА ДР", "НА 8 МАРТА"),
             products = listOf(
-                Product(1, "Брюки из батиста", "123", 12999, description = "", category = "", imageUrl = ""),
-                Product(2, "Трусы-слипы", "456", 599, description = "", category = "", imageUrl = "")
+                Product("1", "Брюки из батиста", "123", 12999, description = "", category = "", imageUrl = ""),
+                Product("2", "Трусы-слипы", "456", 599, description = "", category = "", imageUrl = "")
             )
         ),
         onProductClick = {},

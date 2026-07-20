@@ -9,6 +9,7 @@ import com.belleyou.feature.category.ui.CategoryUiState
 import com.belleyou.feature.category.ui.SortOption
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -26,19 +27,31 @@ class CategoryViewModel(
     fun load(categoryName: String) {
         currentCategoryName = categoryName
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            
             combine(
                 productRepository.getProductsFlow(),
                 favoritesRepository.favoritesFlow
             ) { products, favorites ->
-                val filteredProducts = products.filter { it.category == categoryName }
+                val filteredProducts = when (categoryName) {
+                    "new" -> products.shuffled().take(20)
+                    "trending" -> products.reversed().take(20)
+                    "recommended" -> products.shuffled()
+                    else -> products.filter { it.category == categoryName }
+                }
+                
                 val sortedProducts = sortProducts(filteredProducts, _uiState.value.selectedSortOption)
                 
                 CategoryUiState(
                     products = sortedProducts,
                     favorites = favorites,
+                    isLoading = false,
+                    error = null,
                     isSortOverlayVisible = _uiState.value.isSortOverlayVisible,
                     selectedSortOption = _uiState.value.selectedSortOption
                 )
+            }.catch { e ->
+                _uiState.update { it.copy(isLoading = false, error = "Ошибка: ${e.message}") }
             }.collect { state ->
                 _uiState.value = state
             }
@@ -63,7 +76,7 @@ class CategoryViewModel(
         }
     }
 
-    fun toggleFavorite(productId: Int) {
+    fun toggleFavorite(productId: String) {
         viewModelScope.launch {
             favoritesRepository.toggleFavorite(productId)
         }

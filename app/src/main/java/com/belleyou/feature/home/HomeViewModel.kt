@@ -7,6 +7,7 @@ import com.belleyou.core.repository.ProductRepository
 import com.belleyou.feature.home.ui.HomeUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -25,23 +26,34 @@ class HomeViewModel(
 
     private fun observeData() {
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
 
             combine(
                 productRepository.getProductsFlow(),
                 favoritesRepository.favoritesFlow
             ) { products, favorites ->
-
                 HomeUiState(
                     products = products,
                     favorites = favorites,
                     searchQuery = _uiState.value.searchQuery,
-                    isLoading = false
+                    isLoading = false,
+                    error = null
                 )
-
+            }.catch { e ->
+                _uiState.update { 
+                    it.copy(
+                        isLoading = false, 
+                        error = "Не удалось загрузить данные: ${e.message}" 
+                    ) 
+                }
             }.collect { state ->
                 _uiState.value = state
             }
         }
+    }
+
+    fun retry() {
+        observeData()
     }
 
     fun onSearchQueryChange(query: String) {
@@ -50,7 +62,7 @@ class HomeViewModel(
         }
     }
 
-    fun toggleFavorite(productId: Int) {
+    fun toggleFavorite(productId: String) {
         viewModelScope.launch {
             favoritesRepository.toggleFavorite(productId)
         }

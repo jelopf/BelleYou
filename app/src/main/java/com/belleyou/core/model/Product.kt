@@ -1,7 +1,7 @@
 package com.belleyou.core.model
 
 data class Product(
-    val id: Int,
+    val id: String,
     val name: String,
     val article: String,
     val price: Int?,
