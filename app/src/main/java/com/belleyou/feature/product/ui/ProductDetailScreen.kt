@@ -1,5 +1,6 @@
 package com.belleyou.feature.product.ui
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -51,6 +52,7 @@ fun ProductDetailScreen(
     viewModel: ProductDetailViewModel = koinViewModel { parametersOf(productId) }
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     ProductDetailContent(
         uiState = uiState,
@@ -59,7 +61,10 @@ fun ProductDetailScreen(
         onSelectSize = viewModel::selectSize,
         onToggleDescription = viewModel::toggleDescription,
         onCloseDescription = viewModel::closeDescription,
-        onAddToCart = viewModel::addToCart,
+        onAddToCart = {
+            viewModel.addToCart()
+            Toast.makeText(context, "Товар добавлен в корзину", Toast.LENGTH_SHORT).show()
+        },
         onFavoriteToggle = { viewModel.toggleFavorite() }
     )
 }

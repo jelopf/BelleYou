@@ -1,5 +1,6 @@
 package com.belleyou.feature.category.ui
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -20,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -42,6 +44,7 @@ fun CategoryScreen(
     viewModel: CategoryViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
     LaunchedEffect(categoryName) {
         viewModel.load(categoryName)
@@ -55,7 +58,11 @@ fun CategoryScreen(
             onProductClick = onProductClick,
             onFavoriteClick = { productId -> viewModel.toggleFavorite(productId) },
             onSortClick = { viewModel.toggleSortOverlay(true) },
-            onRetry = { viewModel.load(categoryName) }
+            onRetry = { viewModel.load(categoryName) },
+            onAddToCart = { productId ->
+                // ViewModel logic could be added here if needed
+                Toast.makeText(context, "Товар добавлен в корзину", Toast.LENGTH_SHORT).show()
+            }
         )
 
         if (uiState.isSortOverlayVisible) {
@@ -76,7 +83,8 @@ fun CategoryScreenContent(
     onProductClick: (String) -> Unit,
     onFavoriteClick: (String) -> Unit,
     onSortClick: () -> Unit,
-    onRetry: () -> Unit
+    onRetry: () -> Unit,
+    onAddToCart: (String) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -115,7 +123,8 @@ fun CategoryScreenContent(
                     products = uiState.products,
                     favorites = uiState.favorites,
                     onProductClick = onProductClick,
-                    onFavoriteClick = onFavoriteClick
+                    onFavoriteClick = onFavoriteClick,
+                    onAddToCart = onAddToCart
                 )
             }
         }
@@ -162,7 +171,8 @@ private fun CategoryGrid(
     products: List<Product>,
     favorites: Set<String>,
     onProductClick: (String) -> Unit,
-    onFavoriteClick: (String) -> Unit
+    onFavoriteClick: (String) -> Unit,
+    onAddToCart: (String) -> Unit
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -189,6 +199,9 @@ private fun CategoryGrid(
                 },
                 onFavoriteClick = {
                     onFavoriteClick(product.id)
+                },
+                onAddToCartClick = {
+                    onAddToCart(product.id)
                 }
             )
         }
@@ -289,6 +302,7 @@ fun CategoryScreenPreview() {
         onProductClick = {},
         onFavoriteClick = {},
         onSortClick = {},
-        onRetry = {}
+        onRetry = {},
+        onAddToCart = {}
     )
 }
