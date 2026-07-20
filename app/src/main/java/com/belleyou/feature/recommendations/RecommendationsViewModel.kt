@@ -33,7 +33,7 @@ class RecommendationsViewModel(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            products = products
+                            products = products.shuffled()
                         )
                     }
                 }
