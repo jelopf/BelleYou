@@ -7,9 +7,10 @@ data class ProductDetailUiState(
     val product: Product? = null,
     val error: String? = null,
     val selectedSize: String = "",
-    val selectedColor: String = "Молочный",
+    val selectedColorName: String = "",
     val isFavorite: Boolean = false,
     val showDescription: Boolean = false,
+    val colorVariants: List<Product> = emptyList(),
     val relatedProducts: List<Product> = emptyList(),
     val matchingProducts: List<Product> = emptyList(),
     val recentlyViewed: List<Product> = emptyList()

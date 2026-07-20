@@ -220,23 +220,24 @@ fun ProductDetailSuccess(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                Text(text = "ЦВЕТ: ${uiState.selectedColor.uppercase()}", fontSize = 12.sp, color = Color.Gray)
+                Text(text = "ЦВЕТ: ${uiState.selectedColorName.uppercase()}", fontSize = 12.sp, color = Color.Gray)
                 Spacer(modifier = Modifier.height(12.dp))
                 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    images.take(2).forEach { imageUrl ->
-                        Box(modifier = Modifier.size(60.dp, 80.dp).border(0.5.dp, Color.LightGray)) {
-                            ShimmerPlaceholder(modifier = Modifier.fillMaxSize())
-                            AsyncImage(
-                                model = ImageRequest.Builder(LocalContext.current)
-                                    .data(imageUrl)
-                                    .crossfade(true)
-                                    .build(),
-                                contentDescription = null,
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Crop
-                            )
-                        }
+                    // Current product image (first variant)
+                    ProductVariantItem(
+                        imageUrl = product.imageUrl,
+                        isSelected = true,
+                        onClick = {}
+                    )
+
+                    // Other variants
+                    uiState.colorVariants.forEach { variant ->
+                        ProductVariantItem(
+                            imageUrl = variant.imageUrl,
+                            isSelected = false,
+                            onClick = { onProductClick(variant.id) }
+                        )
                     }
                 }
 
@@ -429,6 +430,34 @@ fun ProductDescriptionOverlay(
             Spacer(modifier = Modifier.height(24.dp))
             Text(text = product.description, fontSize = 14.sp, lineHeight = 20.sp)
         }
+    }
+}
+
+@Composable
+fun ProductVariantItem(
+    imageUrl: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .size(60.dp, 80.dp)
+            .border(
+                width = if (isSelected) 1.5.dp else 0.5.dp,
+                color = if (isSelected) Color.Black else Color.LightGray
+            )
+            .clickable(onClick = onClick)
+    ) {
+        ShimmerPlaceholder(modifier = Modifier.fillMaxSize())
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(imageUrl)
+                .crossfade(true)
+                .build(),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
     }
 }
 

@@ -43,20 +43,25 @@ fun ProductInfoBlock(
             color = colorResource(R.color.belle_black)
         )
 
-        // Color indicators
-        if (product.variantImages.isNotEmpty()) {
+        // Actual Color indicators
+        if (product.colorHexes.isNotEmpty()) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 modifier = Modifier.padding(vertical = 2.dp)
             ) {
-                // Showing simple dots as color indicators
-                repeat(product.variantImages.size.coerceAtMost(3)) {
+                product.colorHexes.take(5).forEach { hex ->
                     Box(
                         modifier = Modifier
-                            .size(8.dp)
-                            .background(Color.LightGray, CircleShape)
-                            .border(0.5.dp, Color.Gray.copy(alpha = 0.2f), CircleShape)
+                            .size(10.dp)
+                            .background(
+                                color = try { Color(android.graphics.Color.parseColor(hex)) } catch(e: Exception) { Color.LightGray },
+                                shape = CircleShape
+                            )
+                            .border(0.5.dp, Color.Gray.copy(alpha = 0.3f), CircleShape)
                     )
+                }
+                if (product.colorHexes.size > 5) {
+                    Text("+${product.colorHexes.size - 5}", fontSize = 8.sp, color = Color.Gray)
                 }
             }
         }

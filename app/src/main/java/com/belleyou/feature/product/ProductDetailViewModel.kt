@@ -6,6 +6,7 @@ import com.belleyou.core.repository.CartRepository
 import com.belleyou.core.repository.FavoritesRepository
 import com.belleyou.core.repository.ProductRepository
 import com.belleyou.feature.product.ui.ProductDetailUiState
+import com.belleyou.core.util.ColorUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
@@ -58,12 +59,19 @@ class ProductDetailViewModel(
             val product = allProducts.find { it.id == productId }
 
             if (product != null) {
+                // Find variants: products with the same name but different articles
+                // Unique by article to avoid duplicates if same product exists in different JSONs
+                val variants = allProducts
+                    .filter { it.name == product.name && it.id != product.id }
+                    .distinctBy { it.article }
 
                 _uiState.update { 
                     it.copy(
                         isLoading = false,
                         product = product,
                         selectedSize = product.sizes.firstOrNull().orEmpty(),
+                        selectedColorName = extractColorFriendlyName(product.article),
+                        colorVariants = variants,
                         relatedProducts = allProducts.shuffled().take(4),
                         matchingProducts = allProducts.shuffled().take(4),
                         recentlyViewed = allProducts.shuffled().take(4),
@@ -80,6 +88,26 @@ class ProductDetailViewModel(
                     )
                 }
             }
+        }
+    }
+
+    private fun extractColorFriendlyName(article: String): String {
+        val colorPart = ColorUtils.extractColorName(article)
+        return when (colorPart.uppercase()) {
+            "BELYY" -> "Белый"
+            "PLOMBIR" -> "Пломбир"
+            "CHERNYY" -> "Черный"
+            "TEMNO_BEZHEVYY", "TEMNO" -> "Темно-бежевый"
+            "BEZHEVYY" -> "Бежевый"
+            "KORALLOVYY" -> "Коралловый"
+            "LAVANDOVYY" -> "Лавандовый"
+            "GOLUBOY" -> "Голубой"
+            "SERYY" -> "Серый"
+            "BORD" -> "Бордо"
+            "MALINA" -> "Малина"
+            "SHOKOLAD" -> "Шоколад"
+            "HAKI" -> "Хаки"
+            else -> colorPart.lowercase().replaceFirstChar { it.uppercase() }
         }
     }
 
