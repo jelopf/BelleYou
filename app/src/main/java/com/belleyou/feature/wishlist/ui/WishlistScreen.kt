@@ -1,29 +1,29 @@
 package com.belleyou.feature.wishlist.ui
 
+import android.content.Intent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.grid.items as gridItems
+import androidx.compose.foundation.lazy.items as lazyItems
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -44,6 +44,9 @@ fun WishlistScreen(
     onGoToCatalog: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
+    var showCreateDialog by remember { mutableStateOf(false) }
 
     WishlistScreenContent(
         uiState = uiState,
@@ -51,8 +54,28 @@ fun WishlistScreen(
         onFavoriteToggle = viewModel::toggleFavorite,
         onAddToCart = viewModel::addToCart,
         onSelectWishlist = viewModel::selectWishlist,
-        onGoToCatalog = onGoToCatalog
+        onGoToCatalog = onGoToCatalog,
+        onShareClick = {
+            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, viewModel.getShareText())
+            }
+            context.startActivity(Intent.createChooser(shareIntent, "Поделиться вишлистом"))
+        },
+        onCreateWishlistClick = { showCreateDialog = true },
+        onDeleteWishlist = viewModel::deleteWishlist,
+        onMoveProduct = viewModel::moveProduct
     )
+
+    if (showCreateDialog) {
+        CreateWishlistDialog(
+            onDismiss = { showCreateDialog = false },
+            onCreate = { name ->
+                viewModel.createWishlist(name)
+                showCreateDialog = false
+            }
+        )
+    }
 }
 
 @Composable
@@ -61,8 +84,12 @@ fun WishlistScreenContent(
     onProductClick: (String) -> Unit,
     onFavoriteToggle: (String) -> Unit,
     onAddToCart: (String) -> Unit,
-    onSelectWishlist: (Int) -> Unit,
-    onGoToCatalog: () -> Unit
+    onSelectWishlist: (String) -> Unit,
+    onGoToCatalog: () -> Unit,
+    onShareClick: () -> Unit,
+    onCreateWishlistClick: () -> Unit,
+    onDeleteWishlist: (String) -> Unit,
+    onMoveProduct: (String, String) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -82,18 +109,19 @@ fun WishlistScreenContent(
                 fontWeight = FontWeight.Light,
                 letterSpacing = 2.sp
             )
-            Icon(
-                imageVector = Icons.Default.Share,
-                contentDescription = "Share",
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .size(20.dp)
-                    .clickable { /* Share action */ },
-                tint = colorResource(id = R.color.belle_black)
-            )
+            Row(modifier = Modifier.align(Alignment.CenterEnd)) {
+                Icon(
+                    imageVector = Icons.Default.Share,
+                    contentDescription = "Share",
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clickable { onShareClick() },
+                    tint = colorResource(id = R.color.belle_black)
+                )
+            }
         }
 
-        if (uiState.products.isEmpty()) {
+        if (uiState.products.isEmpty() && uiState.selectedWishlistName == "ИЗБРАННОЕ") {
             EmptyWishlistContent(
                 recommendedProducts = uiState.recommendedProducts,
                 favorites = uiState.favorites,
@@ -107,7 +135,10 @@ fun WishlistScreenContent(
                 onProductClick = onProductClick,
                 onFavoriteToggle = onFavoriteToggle,
                 onAddToCart = onAddToCart,
-                onSelectWishlist = onSelectWishlist
+                onSelectWishlist = onSelectWishlist,
+                onCreateWishlistClick = onCreateWishlistClick,
+                onDeleteWishlist = onDeleteWishlist,
+                onMoveProduct = onMoveProduct
             )
         }
     }
@@ -119,10 +150,13 @@ private fun FilledWishlistContent(
     onProductClick: (String) -> Unit,
     onFavoriteToggle: (String) -> Unit,
     onAddToCart: (String) -> Unit,
-    onSelectWishlist: (Int) -> Unit
+    onSelectWishlist: (String) -> Unit,
+    onCreateWishlistClick: () -> Unit,
+    onDeleteWishlist: (String) -> Unit,
+    onMoveProduct: (String, String) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
-        // Wishlists Section
+        // Wishlists Header
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -140,61 +174,145 @@ private fun FilledWishlistContent(
                 text = "Добавить вишлист",
                 fontSize = 12.sp,
                 color = colorResource(id = R.color.belle_black),
-                modifier = Modifier.clickable { /* Add wishlist */ }
+                modifier = Modifier.clickable { onCreateWishlistClick() }
             )
         }
 
+        // Wishlists Selector
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.padding(vertical = 8.dp)
         ) {
-            itemsIndexed(uiState.wishlists) { index, title ->
-                val isSelected = index == uiState.selectedWishlistIndex
-                OutlinedButton(
-                    onClick = { onSelectWishlist(index) },
-                    shape = RectangleShape,
-                    border = BorderStroke(
-                        width = 0.5.dp,
-                        color = if (isSelected) colorResource(id = R.color.belle_blue_dark) else Color.LightGray
-                    ),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = if (isSelected) colorResource(id = R.color.belle_blue_dark).copy(alpha = 0.5f) else Color.Transparent,
-                        contentColor = colorResource(id = R.color.belle_black)
-                    ),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
-                    modifier = Modifier.height(36.dp)
-                ) {
-                    Text(text = title, fontSize = 12.sp)
+            lazyItems(uiState.wishlists) { title ->
+                val isSelected = title == uiState.selectedWishlistName
+                Box {
+                    OutlinedButton(
+                        onClick = { onSelectWishlist(title) },
+                        shape = RectangleShape,
+                        border = BorderStroke(
+                            width = 0.5.dp,
+                            color = if (isSelected) colorResource(id = R.color.belle_blue_dark) else Color.LightGray
+                        ),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = if (isSelected) colorResource(id = R.color.belle_blue_dark).copy(alpha = 0.5f) else Color.Transparent,
+                            contentColor = colorResource(id = R.color.belle_black)
+                        ),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
+                        modifier = Modifier.height(36.dp)
+                    ) {
+                        Text(text = title, fontSize = 12.sp)
+                    }
                 }
             }
         }
+        
+        // Wishlist Actions (Delete)
+        if (uiState.selectedWishlistName != "ИЗБРАННОЕ") {
+            TextButton(
+                onClick = { onDeleteWishlist(uiState.selectedWishlistName) },
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) {
+                Icon(Icons.Default.Delete, null, modifier = Modifier.size(16.dp), tint = Color.Red)
+                Spacer(Modifier.width(4.dp))
+                Text("Удалить этот вишлист", color = Color.Red, fontSize = 12.sp)
+            }
+        }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-        // Product Grid
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp),
-            modifier = Modifier.fillMaxSize()
-        ) {
-            items(uiState.products) { product ->
-                Column {
-                    ProductCard(
-                        product = product,
-                        isFavorite = true,
-                        showFavoriteIcon = true,
-                        showInCartButton = true,
-                        onClick = { onProductClick(product.id) },
-                        onFavoriteClick = { onFavoriteToggle(product.id) },
-                        onAddToCartClick = { onAddToCart(product.id) }
-                    )
+        if (uiState.products.isEmpty()) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("В этом списке пока нет товаров", color = Color.Gray)
+            }
+        } else {
+            // Product Grid
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(24.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                gridItems(uiState.products) { product ->
+                    Box {
+                        var showMenu by remember { mutableStateOf(false) }
+                        
+                        Column {
+                            ProductCard(
+                                product = product,
+                                isFavorite = true,
+                                showFavoriteIcon = true,
+                                showInCartButton = true,
+                                onClick = { onProductClick(product.id) },
+                                onFavoriteClick = { onFavoriteToggle(product.id) },
+                                onAddToCartClick = { onAddToCart(product.id) }
+                            )
+                        }
+                        
+                        // Move to another wishlist button
+                        IconButton(
+                            onClick = { showMenu = true },
+                            modifier = Modifier.align(Alignment.TopStart).padding(4.dp)
+                        ) {
+                            Icon(Icons.Default.MoreVert, null, tint = Color.Gray, modifier = Modifier.size(20.dp))
+                        }
+                        
+                        DropdownMenu(
+                            expanded = showMenu,
+                            onDismissRequest = { showMenu = false }
+                        ) {
+                            Text("Переместить в:", modifier = Modifier.padding(8.dp), fontSize = 12.sp, color = Color.Gray)
+                            uiState.wishlists.filter { it != uiState.selectedWishlistName }.forEach { target ->
+                                DropdownMenuItem(
+                                    text = { Text(target) },
+                                    onClick = {
+                                        onMoveProduct(product.id, target)
+                                        showMenu = false
+                                    }
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
     }
+}
+
+@Composable
+fun CreateWishlistDialog(
+    onDismiss: () -> Unit,
+    onCreate: (String) -> Unit
+) {
+    var name by remember { mutableStateOf("") }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Новый вишлист") },
+        text = {
+            TextField(
+                value = name,
+                onValueChange = { name = it },
+                placeholder = { Text("Название (например, Подарки)") },
+                singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent
+                )
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = { if (name.isNotBlank()) onCreate(name) }) {
+                Text("СОЗДАТЬ", color = colorResource(R.color.belle_black))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("ОТМЕНА", color = Color.Gray)
+            }
+        },
+        shape = RectangleShape
+    )
 }
 
 @Composable
@@ -281,7 +399,11 @@ fun WishlistScreenEmptyPreview() {
         onFavoriteToggle = {},
         onAddToCart = {},
         onSelectWishlist = {},
-        onGoToCatalog = {}
+        onGoToCatalog = {},
+        onShareClick = {},
+        onCreateWishlistClick = {},
+        onDeleteWishlist = {},
+        onMoveProduct = { _, _ -> }
     )
 }
 
@@ -291,6 +413,7 @@ fun WishlistScreenFilledPreview() {
     WishlistScreenContent(
         uiState = WishlistUiState(
             wishlists = listOf("ИЗБРАННОЕ", "НА ДР", "НА 8 МАРТА"),
+            selectedWishlistName = "ИЗБРАННОЕ",
             products = listOf(
                 Product("1", "Брюки из батиста", "123", 12999, description = "", category = "", imageUrl = ""),
                 Product("2", "Трусы-слипы", "456", 599, description = "", category = "", imageUrl = "")
@@ -300,6 +423,10 @@ fun WishlistScreenFilledPreview() {
         onFavoriteToggle = {},
         onAddToCart = {},
         onSelectWishlist = {},
-        onGoToCatalog = {}
+        onGoToCatalog = {},
+        onShareClick = {},
+        onCreateWishlistClick = {},
+        onDeleteWishlist = {},
+        onMoveProduct = { _, _ -> }
     )
 }

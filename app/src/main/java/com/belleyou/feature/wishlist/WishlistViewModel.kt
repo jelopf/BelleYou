@@ -18,66 +18,78 @@ class WishlistViewModel(
     private val cartRepository: CartRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(
-        WishlistUiState(
-            wishlists = listOf(
-                "ИЗБРАННОЕ",
-                "НА ДР",
-                "НА 8 МАРТА"
-            )
-        )
-    )
-
+    private val _uiState = MutableStateFlow(WishlistUiState(isLoading = true))
     val uiState = _uiState.asStateFlow()
 
+    private val selectedWishlistName = MutableStateFlow("ИЗБРАННОЕ")
+
     init {
-        observeData()
-    }
-
-    private fun observeData() {
         viewModelScope.launch {
-
             combine(
                 productRepository.getProductsFlow(),
-                favoritesRepository.favoritesFlow
-            ) { products, favorites ->
-
-                val filtered = products.filter { it.id in favorites }
+                favoritesRepository.wishlistsFlow,
+                favoritesRepository.favoritesFlow,
+                selectedWishlistName
+            ) { allProducts, wishlistsMap, allFavorites, selectedName ->
+                
+                val productIds = wishlistsMap[selectedName] ?: emptySet()
+                val filteredProducts = allProducts.filter { it.id in productIds }
 
                 WishlistUiState(
-                    wishlists = _uiState.value.wishlists,
-                    selectedWishlistIndex = _uiState.value.selectedWishlistIndex,
-                    products = filtered,
-                    recommendedProducts = products.shuffled().take(6),
-                    favorites = favorites
+                    wishlists = wishlistsMap.keys.toList(),
+                    selectedWishlistName = selectedName,
+                    products = filteredProducts,
+                    recommendedProducts = allProducts.filter { it.id !in allFavorites }.shuffled().take(6),
+                    favorites = allFavorites,
+                    isLoading = false
                 )
-
             }.collect { state ->
                 _uiState.value = state
             }
         }
     }
 
-    fun selectWishlist(index: Int) {
-        _uiState.update {
-            it.copy(selectedWishlistIndex = index)
+    fun selectWishlist(name: String) {
+        selectedWishlistName.value = name
+    }
+
+    fun createWishlist(name: String) {
+        viewModelScope.launch {
+            favoritesRepository.createWishlist(name)
+        }
+    }
+
+    fun deleteWishlist(name: String) {
+        viewModelScope.launch {
+            if (selectedWishlistName.value == name) {
+                selectedWishlistName.value = "ИЗБРАННОЕ"
+            }
+            favoritesRepository.deleteWishlist(name)
         }
     }
 
     fun toggleFavorite(productId: String) {
         viewModelScope.launch {
-            favoritesRepository.toggleFavorite(productId)
+            favoritesRepository.toggleFavorite(productId, selectedWishlistName.value)
+        }
+    }
+
+    fun moveProduct(productId: String, targetWishlist: String) {
+        viewModelScope.launch {
+            favoritesRepository.moveProduct(productId, selectedWishlistName.value, targetWishlist)
         }
     }
 
     fun addToCart(productId: String) {
         val product = _uiState.value.products.find { it.id == productId } ?: return
-
         viewModelScope.launch {
-            cartRepository.add(
-                product.id,
-                product.sizes.firstOrNull().orEmpty()
-            )
+            cartRepository.add(product.id, product.sizes.firstOrNull().orEmpty())
         }
+    }
+    
+    fun getShareText(): String {
+        val state = _uiState.value
+        val productsText = state.products.joinToString("\n") { "- ${it.name}: ${it.price} ₽" }
+        return "Мой вишлист '${state.selectedWishlistName}' в Belle You:\n\n$productsText"
     }
 }
